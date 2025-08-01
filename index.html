@@ -7,7 +7,7 @@
 <body>
   <h2>Soumission de mémoire / Thesis submission</h2>
 
-  <form action="https://hook.eu2.make.com/r0wtlfvo2z0x9wd8tu6a3gmjk2mul6jc" method="post">
+  <form action="https://hook.eu2.make.com/r0wtlfvo2z0x9wd8tu6a3gmjk2mul6jc" method="POST">
     <label for="prenom">Prénom / First name:</label><br />
     <input type="text" id="prenom" name="prenom" required /><br /><br />
 
@@ -28,7 +28,18 @@
     </select><br /><br />
 
     <label for="file">Téléverser le fichier / Upload your file (.docx only):</label><br />
-    <input type="hidden" role="uploadcare-uploader" name="file" data-public-key="21d7228fa1f01ac80183" data-clearable /><br /><br />
+    <input
+      type="hidden"
+      role="uploadcare-uploader"
+      name="file"
+      data-public-key="21d7228fa1f01ac80183"
+      data-clearable
+      data-tabs="file url"
+      data-multiple="false"
+      data-images-only="false"
+      data-max-size="10485760"
+      data-preview-step="true"
+    /><br /><br />
 
     <label>
       <input type="checkbox" name="rgpd" required />
