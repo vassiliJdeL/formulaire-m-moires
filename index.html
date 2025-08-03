@@ -1,58 +1,30 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <title>Soumission de mémoire / Thesis submission</title>
-</head>
-<body>
-  <h2>Soumission de mémoire / Thesis submission</h2>
+<form
+  action="https://hook.eu2.make.com/r0wtlfvo2z0x9wd8tu6a3gmjk2mul6jc"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  <label for="prenom">Prénom :</label><br />
+  <input type="text" id="prenom" name="prenom" required /><br /><br />
 
-  <form action="https://hook.eu2.make.com/r0wtlfvo2z0x9wd8tu6a3gmjk2mul6jc" method="POST">
-    <label for="prenom">Prénom / First name:</label><br />
-    <input type="text" id="prenom" name="prenom" required /><br /><br />
+  <label for="nom">Nom :</label><br />
+  <input type="text" id="nom" name="nom" required /><br /><br />
 
-    <label for="nom">Nom / Last name:</label><br />
-    <input type="text" id="nom" name="nom" required /><br /><br />
+  <label for="email">Email :</label><br />
+  <input type="email" id="email" name="email" required /><br /><br />
 
-    <label for="titre">Titre du mémoire / Thesis title:</label><br />
-    <input type="text" id="titre" name="titre" required /><br /><br />
+  <label for="titre">Titre du mémoire :</label><br />
+  <input type="text" id="titre" name="titre" required /><br /><br />
 
-    <label for="email">Adresse email / Email address:</label><br />
-    <input type="email" id="email" name="email" required /><br /><br />
+  <label for="langue">Langue :</label><br />
+  <select name="langue" id="langue">
+    <option value="fr">Français</option>
+    <option value="en">Anglais</option>
+  </select><br /><br />
 
-    <label for="langue">Langue du mémoire / Thesis language:</label><br />
-    <select id="langue" name="langue" required>
-      <option value="">-- Choisissez / Select --</option>
-      <option value="français">Français / French</option>
-      <option value="anglais">Anglais / English</option>
-    </select><br /><br />
+  <label for="memoire">Fichier mémoire (.docx uniquement) :</label><br />
+  <input type="hidden" role="uploadcare-uploader" name="memoire_url" data-public-key="21d7228fa1f01ac80183" data-clearable /><br /><br />
 
-    <label for="file">Téléverser le fichier / Upload your file (.docx only):</label><br />
-    <input
-      type="hidden"
-      role="uploadcare-uploader"
-      name="file"
-      data-public-key="21d7228fa1f01ac80183"
-      data-clearable
-      data-tabs="file url"
-      data-multiple="false"
-      data-images-only="false"
-      data-max-size="10485760"
-      data-preview-step="true"
-    /><br /><br />
+  <label><input type="checkbox" name="rgpd" required /> J'accepte que mes données soient traitées pour l'évaluation du mémoire</label><br /><br />
 
-    <label>
-      <input type="checkbox" name="rgpd" required />
-      J'accepte le traitement automatisé de mes données dans le cadre de l'évaluation de mon mémoire. /
-      I agree to the automated processing of my data for the purpose of evaluating my thesis.
-    </label><br /><br />
-
-    <button type="submit">Soumettre / Submit</button>
-  </form>
-
-  <script>
-    UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
-  </script>
-  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
-</body>
-</html>
+  <button type="submit">Envoyer</button>
+</form>
