@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Soumission de mémoire / Thesis Submission</title>
-
-  <!-- Uploadcare -->
   <script>
-    UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
+    UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183"; // Ne pas modifier
   </script>
   <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
@@ -15,53 +13,44 @@
   <h1>Soumission de mémoire<br />Thesis Submission</h1>
 
   <form
-    action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"
+    action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"  <!-- 🔁 Remplace ici si tu changes de webhook -->
     method="POST"
   >
-    <label>Prénom (First name):</label><br />
+    <label for="firstName">Prénom (First name):</label><br />
     <input type="text" name="firstName" required /><br /><br />
 
-    <label>Nom (Last name):</label><br />
+    <label for="lastName">Nom (Last name):</label><br />
     <input type="text" name="lastName" required /><br /><br />
 
-    <label>Email :</label><br />
+    <label for="email">Email :</label><br />
     <input type="email" name="email" required /><br /><br />
 
-    <label>Titre du mémoire / Thesis title:</label><br />
+    <label for="title">Titre du mémoire / Thesis title:</label><br />
     <input type="text" name="title" required /><br /><br />
 
-    <label>Langue du mémoire / Language of the thesis:</label><br />
+    <label for="language">Langue du mémoire / Language of the thesis:</label><br />
     <select name="language" required>
       <option value="fr">Français</option>
       <option value="en">English</option>
     </select><br /><br />
 
-    <label>Consentement RGPD / Data consent:</label><br />
+    <label for="rgpd">Consentement RGPD / Data consent:</label><br />
     <input type="checkbox" name="rgpd" value="on" required />
     J'accepte que mes données soient traitées dans le cadre de l'évaluation du mémoire.<br /><br />
 
-    <label>Téléverser le mémoire (.docx) / Upload thesis:</label><br />
+    <label for="file">Téléverser le mémoire (format Word) / Upload your thesis (.docx):</label><br />
     <input
       type="hidden"
       role="uploadcare-uploader"
+      name="file"
       data-clearable
       data-crop="disabled"
       data-multiple="false"
-      data-tabs="file"
-      id="uploader"
+      data-tabs="file url"
+      required
     /><br /><br />
-
-    <!-- Champ caché contenant l’URL du fichier UploadCare -->
-    <input type="hidden" name="fileUrl" id="fileUrl" />
 
     <input type="submit" value="Soumettre / Submit" />
   </form>
-
-  <script>
-    const widget = uploadcare.Widget('[role=uploadcare-uploader]');
-    widget.onUploadComplete(info => {
-      document.getElementById('fileUrl').value = info.cdnUrl;
-    });
-  </script>
 </body>
 </html>
