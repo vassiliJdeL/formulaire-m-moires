@@ -6,7 +6,7 @@
     UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
     UPLOADCARE_LOCALE = "fr";
     UPLOADCARE_TABS = "file url";
-    UPLOADCARE_STORE = "auto"; // Active le stockage permanent
+    UPLOADCARE_STORE = "auto";
   </script>
   <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
@@ -45,25 +45,32 @@
       e.preventDefault();
 
       const form = e.target;
-      const fichier = form.fichier.value;
+      const fileUUID = form.fichier.value;
 
-      if (!fichier) {
+      if (!fileUUID) {
         alert("Veuillez téléverser un fichier .docx.");
         return;
       }
 
-      const payload = {
-        nom: form.nom.value,
-        prenom: form.prenom.value,
-        titre: form.titre.value,
-        email: form.email.value,
-        langue: form.langue.value,
-        rgpd: form.rgpd.checked,
-        url: fichier
-      };
+      // Utilisation de fileInfo pour obtenir l’URL complète
+      uploadcare.fileFrom("uploaded", fileUUID).then(file => file.done(info => {
+        const url = info.cdnUrl;
 
-      console.log("Payload à envoyer :", payload);
-      alert("Formulaire prêt. Données à envoyer au scénario Make.");
+        const payload = {
+          nom: form.nom.value,
+          prenom: form.prenom.value,
+          titre: form.titre.value,
+          email: form.email.value,
+          langue: form.langue.value,
+          rgpd: form.rgpd.checked,
+          url: url
+        };
+
+        console.log("Payload prêt à envoyer :", payload);
+        alert("Formulaire prêt. Données à envoyer au scénario Make.");
+        
+        // Ici, tu peux envoyer le payload avec fetch/post si besoin
+      }));
     });
   </script>
 </body>
