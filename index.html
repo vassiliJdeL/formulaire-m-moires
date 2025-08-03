@@ -1,56 +1,70 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Soumission de mémoire / Thesis Submission</title>
+  <title>Soumettre un mémoire</title>
   <script>
-    UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183"; // Ne pas modifier
+    UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
+    UPLOADCARE_LOCALE = "fr";
+    UPLOADCARE_TABS = "file url";
+    UPLOADCARE_STORE = "auto"; // Active le stockage permanent
   </script>
   <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
-
 <body>
-  <h1>Soumission de mémoire<br />Thesis Submission</h1>
+  <h1>Soumettre un mémoire .docx</h1>
+  <form id="upload-form">
+    <label>Nom :</label><br />
+    <input type="text" name="nom" required /><br /><br />
 
-  <form
-    action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"  <!-- 🔁 Remplace ici si tu changes de webhook -->
-    method="POST"
-  >
-    <label for="firstName">Prénom (First name):</label><br />
-    <input type="text" name="firstName" required /><br /><br />
+    <label>Prénom :</label><br />
+    <input type="text" name="prenom" required /><br /><br />
 
-    <label for="lastName">Nom (Last name):</label><br />
-    <input type="text" name="lastName" required /><br /><br />
+    <label>Titre du mémoire :</label><br />
+    <input type="text" name="titre" required /><br /><br />
 
-    <label for="email">Email :</label><br />
+    <label>Email :</label><br />
     <input type="email" name="email" required /><br /><br />
 
-    <label for="title">Titre du mémoire / Thesis title:</label><br />
-    <input type="text" name="title" required /><br /><br />
-
-    <label for="language">Langue du mémoire / Language of the thesis:</label><br />
-    <select name="language" required>
+    <label>Langue :</label><br />
+    <select name="langue">
       <option value="fr">Français</option>
       <option value="en">English</option>
     </select><br /><br />
 
-    <label for="rgpd">Consentement RGPD / Data consent:</label><br />
-    <input type="checkbox" name="rgpd" value="on" required />
-    J'accepte que mes données soient traitées dans le cadre de l'évaluation du mémoire.<br /><br />
+    <input type="checkbox" name="rgpd" required />
+    <label>J'accepte le traitement de mes données pour l’évaluation automatisée</label><br /><br />
 
-    <label for="file">Téléverser le mémoire (format Word) / Upload your thesis (.docx):</label><br />
-    <input
-      type="hidden"
-      role="uploadcare-uploader"
-      name="file"
-      data-clearable
-      data-crop="disabled"
-      data-multiple="false"
-      data-tabs="file url"
-      required
-    /><br /><br />
+    <label>Fichier mémoire (.docx uniquement) :</label><br />
+    <input type="hidden" role="uploadcare-uploader" name="fichier" data-clearable="true" /><br /><br />
 
-    <input type="submit" value="Soumettre / Submit" />
+    <button type="submit">Envoyer</button>
   </form>
+
+  <script>
+    document.getElementById("upload-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const fichier = form.fichier.value;
+
+      if (!fichier) {
+        alert("Veuillez téléverser un fichier .docx.");
+        return;
+      }
+
+      const payload = {
+        nom: form.nom.value,
+        prenom: form.prenom.value,
+        titre: form.titre.value,
+        email: form.email.value,
+        langue: form.langue.value,
+        rgpd: form.rgpd.checked,
+        url: fichier
+      };
+
+      console.log("Payload à envoyer :", payload);
+      alert("Formulaire prêt. Données à envoyer au scénario Make.");
+    });
+  </script>
 </body>
 </html>
