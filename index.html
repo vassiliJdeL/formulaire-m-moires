@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Soumission de mémoire / Thesis Submission</title>
+
+  <!-- Uploadcare -->
   <script>
     UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
   </script>
@@ -16,40 +18,50 @@
     action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"
     method="POST"
   >
-    <label for="firstName">Prénom (First name):</label><br />
+    <label>Prénom (First name):</label><br />
     <input type="text" name="firstName" required /><br /><br />
 
-    <label for="lastName">Nom (Last name):</label><br />
+    <label>Nom (Last name):</label><br />
     <input type="text" name="lastName" required /><br /><br />
 
-    <label for="email">Email :</label><br />
+    <label>Email :</label><br />
     <input type="email" name="email" required /><br /><br />
 
-    <label for="title">Titre du mémoire / Thesis title:</label><br />
+    <label>Titre du mémoire / Thesis title:</label><br />
     <input type="text" name="title" required /><br /><br />
 
-    <label for="language">Langue du mémoire / Language of the thesis:</label><br />
+    <label>Langue du mémoire / Language of the thesis:</label><br />
     <select name="language" required>
       <option value="fr">Français</option>
       <option value="en">English</option>
     </select><br /><br />
 
-    <label for="rgpd">Consentement RGPD / Data consent:</label><br />
+    <label>Consentement RGPD / Data consent:</label><br />
     <input type="checkbox" name="rgpd" value="on" required />
     J'accepte que mes données soient traitées dans le cadre de l'évaluation du mémoire.<br /><br />
 
-    <label for="file">Téléverser le mémoire (format Word) / Upload your thesis (.docx):</label><br />
+    <label>Téléverser le mémoire (.docx) / Upload thesis:</label><br />
     <input
-      type="text"
-      name="file"
+      type="hidden"
       role="uploadcare-uploader"
       data-clearable
+      data-crop="disabled"
       data-multiple="false"
       data-tabs="file"
-      required
+      id="uploader"
     /><br /><br />
+
+    <!-- Champ caché où on injecte l'URL publique du fichier UploadCare -->
+    <input type="hidden" name="fileUrl" id="fileUrl" />
 
     <input type="submit" value="Soumettre / Submit" />
   </form>
+
+  <script>
+    const widget = uploadcare.Widget('[role=uploadcare-uploader]');
+    widget.onUploadComplete(info => {
+      document.getElementById('fileUrl').value = info.cdnUrl;
+    });
+  </script>
 </body>
 </html>
