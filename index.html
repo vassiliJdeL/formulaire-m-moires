@@ -43,9 +43,47 @@
     <button type="submit">Soumettre / Submit</button>
   </form>
 
+  <div id="confirmation" style="display:none; margin-top:20px;">
+    <h2>🇫🇷 Mémoire reçu avec succès</h2>
+    <p>Merci, ton mémoire a bien été soumis.<br />
+    ⏳ <strong>L’évaluation est en cours de traitement.</strong><br />
+    Tu la recevras par email dans les prochaines minutes, à l’adresse que tu as indiquée.<br />
+    📩 <strong>Pense à vérifier aussi tes courriers indésirables</strong> (spams), surtout si tu utilises une adresse universitaire, Hotmail ou Outlook.</p>
+    <hr />
+    <h2>🇬🇧 Thesis successfully submitted</h2>
+    <p>Thank you, your thesis has been successfully submitted.<br />
+    ⏳ <strong>Your evaluation is being processed.</strong><br />
+    You will receive it by email within the next few minutes, at the address you provided.<br />
+    📩 <strong>Don’t forget to check your spam folder</strong>, especially if you are using a university, Hotmail or Outlook email.</p>
+  </div>
+
   <script>
     UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
   </script>
   <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+
+  <script>
+    document.querySelector('form').addEventListener('submit', function (e) {
+      e.preventDefault(); // Empêche le rechargement
+      const form = e.target;
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          form.style.display = 'none';
+          document.getElementById('confirmation').style.display = 'block';
+        } else {
+          alert("Erreur lors de la soumission. Veuillez réessayer.");
+        }
+      })
+      .catch(() => {
+        alert("Erreur de connexion. Veuillez réessayer.");
+      });
+    });
+  </script>
 </body>
 </html>
