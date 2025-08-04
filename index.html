@@ -1,77 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <title>Soumettre un mémoire</title>
-  <script>
-    UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
-    UPLOADCARE_LOCALE = "fr";
-    UPLOADCARE_TABS = "file url";
-    UPLOADCARE_STORE = "auto";
-  </script>
-  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>Soumission de mémoire / Thesis submission</title>
 </head>
 <body>
-  <h1>Soumettre un mémoire .docx</h1>
-  <form id="upload-form">
-    <label>Nom :</label><br />
-    <input type="text" name="nom" required /><br /><br />
+  <h2>Soumission de mémoire / Thesis submission</h2>
 
-    <label>Prénom :</label><br />
-    <input type="text" name="prenom" required /><br /><br />
+  <form action="https://hook.eu2.make.com/98oae45y4ndxk64s7t75pycc5z8tz6ee" method="post">
+    <label for="prenom">Prénom / First name:</label><br />
+    <input type="text" id="prenom" name="prenom" required /><br /><br />
 
-    <label>Titre du mémoire :</label><br />
-    <input type="text" name="titre" required /><br /><br />
+    <label for="nom">Nom / Last name:</label><br />
+    <input type="text" id="nom" name="nom" required /><br /><br />
 
-    <label>Email :</label><br />
-    <input type="email" name="email" required /><br /><br />
+    <label for="titre">Titre du mémoire / Thesis title:</label><br />
+    <input type="text" id="titre" name="titre" required /><br /><br />
 
-    <label>Langue :</label><br />
-    <select name="langue">
-      <option value="fr">Français</option>
-      <option value="en">English</option>
+    <label for="email">Adresse email / Email address:</label><br />
+    <input type="email" id="email" name="email" required /><br /><br />
+
+    <label for="langue">Langue du mémoire / Thesis language:</label><br />
+    <select id="langue" name="langue" required>
+      <option value="">-- Choisissez / Select --</option>
+      <option value="français">Français / French</option>
+      <option value="anglais">Anglais / English</option>
     </select><br /><br />
 
-    <input type="checkbox" name="rgpd" required />
-    <label>J'accepte le traitement de mes données pour l’évaluation automatisée</label><br /><br />
+    <label for="file">Téléverser le fichier / Upload your file (.docx only):</label><br />
+    <input type="hidden" role="uploadcare-uploader" name="file" data-public-key="21d7228fa1f01ac80183" data-clearable /><br /><br />
 
-    <label>Fichier mémoire (.docx uniquement) :</label><br />
-    <input type="hidden" role="uploadcare-uploader" name="fichier" data-clearable="true" /><br /><br />
+    <label>
+      <input type="checkbox" name="rgpd" required />
+      J'accepte le traitement automatisé de mes données dans le cadre de l'évaluation de mon mémoire. /
+      I agree to the automated processing of my data for the purpose of evaluating my thesis.
+    </label><br /><br />
 
-    <button type="submit">Envoyer</button>
+    <button type="submit">Soumettre / Submit</button>
   </form>
 
   <script>
-    document.getElementById("upload-form").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const form = e.target;
-      const fileUUID = form.fichier.value;
-
-      if (!fileUUID) {
-        alert("Veuillez téléverser un fichier .docx.");
-        return;
-      }
-
-      // Utilisation de fileInfo pour obtenir l’URL complète
-      uploadcare.fileFrom("uploaded", fileUUID).then(file => file.done(info => {
-        const url = info.cdnUrl;
-
-        const payload = {
-          nom: form.nom.value,
-          prenom: form.prenom.value,
-          titre: form.titre.value,
-          email: form.email.value,
-          langue: form.langue.value,
-          rgpd: form.rgpd.checked,
-          url: url
-        };
-
-        console.log("Payload prêt à envoyer :", payload);
-        alert("Formulaire prêt. Données à envoyer au scénario Make.");
-        
-        // Ici, tu peux envoyer le payload avec fetch/post si besoin
-      }));
-    });
+    UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
   </script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </body>
 </html>
