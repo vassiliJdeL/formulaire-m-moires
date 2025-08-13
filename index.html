@@ -3,47 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <title>Soumission de mémoire / Thesis submission</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Uploadcare -->
+  <script>
+    // ✅ Ta clé publique Uploadcare
+    window.UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
+  </script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 24px; line-height: 1.5; }
+    form, #confirmation { max-width: 560px; }
+    label { display: block; margin-top: 12px; }
+    input, select, button { font-size: 16px; padding: 8px; width: 100%; box-sizing: border-box; }
+    button { cursor: pointer; margin-top: 16px; }
+    .hint { font-size: 14px; color: #555; }
+  </style>
 </head>
 <body>
   <h2>Soumission de mémoire / Thesis submission</h2>
 
-  <form action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm" method="post">
-    <label for="prenom">Prénom / First name:</label><br />
-    <input type="text" id="prenom" name="prenom" required /><br /><br />
+  <form id="memoireForm" autocomplete="on">
+    <label for="prenom">Prénom / First name:</label>
+    <input type="text" id="prenom" name="prenom" required />
 
-    <label for="nom">Nom / Last name:</label><br />
-    <input type="text" id="nom" name="nom" required /><br /><br />
+    <label for="nom">Nom / Last name:</label>
+    <input type="text" id="nom" name="nom" required />
 
-    <label for="titre">Titre du mémoire / Thesis title:</label><br />
-    <input type="text" id="titre" name="titre" required /><br /><br />
+    <label for="titre">Titre du mémoire / Thesis title:</label>
+    <input type="text" id="titre" name="titre" required />
 
-    <label for="email">Adresse email / Email address:</label><br />
-    <input type="email" id="email" name="email" required /><br /><br />
+    <label for="email">Adresse email / Email address:</label>
+    <input type="email" id="email" name="email" required />
 
-    <label for="langue">Langue du mémoire / Thesis language:</label><br />
+    <label for="langue">Langue du mémoire / Thesis language:</label>
     <select id="langue" name="langue" required>
       <option value="">-- Choisissez / Select --</option>
       <option value="français">Français / French</option>
       <option value="anglais">Anglais / English</option>
-    </select><br /><br />
+    </select>
 
-    <label for="file">Téléverser le fichier / Upload your file (.docx only):</label><br />
-    <input type="hidden" role="uploadcare-uploader" 
-           name="file" 
-           data-public-key="21d7228fa1f01ac80183" 
-           data-clearable 
-           data-file-types=".docx" /><br /><br />
+    <label for="ucUploader">Téléverser le fichier / Upload your file (.docx only):</label>
+    <input
+      type="hidden"
+      id="ucUploader"
+      role="uploadcare-uploader"
+      name="file"
+      data-file-types=".docx"
+      data-clearable
+    />
+    <p class="hint">Format accepté: .docx (Word). Attendez la fin du téléversement avant d'envoyer.</p>
 
-    <label>
-      <input type="checkbox" name="rgpd" required />
-      J'accepte le traitement automatisé de mes données dans le cadre de l'évaluation de mon mémoire. /
-      I agree to the automated processing of my data for the purpose of evaluating my thesis.
-    </label><br /><br />
+    <label style="margin-top:16px;">
+      <input type="checkbox" id="rgpd" required />
+      J'accepte le traitement automatisé de mes données dans le cadre de l'évaluation de mon mémoire.
+    </label>
 
-    <!-- ✅ Champ caché TOKEN ajouté ici -->
-    <input type="hidden" name="token" value="2_TOUGH_eval_5_on" />
+    <!-- ✅ TOKEN côté client (si tu veux le masquer, il faut passer par un backend) -->
+    <input type="hidden" id="token" value="2_TOUGH_eval_5_on" />
 
-    <button type="submit">Soumettre / Submit</button>
+    <button type="button" id="submitBtn">Soumettre / Submit</button>
   </form>
 
   <div id="confirmation" style="display:none; margin-top:20px;">
@@ -51,42 +71,86 @@
     <p>Merci, ton mémoire a bien été soumis.<br />
     ⏳ <strong>L’évaluation est en cours de traitement.</strong><br />
     Tu la recevras par email dans les prochaines minutes, à l’adresse que tu as indiquée.<br />
-    📩 <strong>Pense à vérifier aussi tes courriers indésirables</strong> (spams), surtout si tu utilises une adresse universitaire, Hotmail ou Outlook.</p>
+    📩 <strong>Pense à vérifier aussi tes courriers indésirables</strong> (spams).</p>
     <hr />
     <h2>🇬🇧 Thesis successfully submitted</h2>
     <p>Thank you, your thesis has been successfully submitted.<br />
     ⏳ <strong>Your evaluation is being processed.</strong><br />
-    You will receive it by email within the next few minutes, at the address you provided.<br />
-    📩 <strong>Don’t forget to check your spam folder</strong>, especially if you are using a university, Hotmail or Outlook email.</p>
+    You will receive it by email within the next few minutes.<br />
+    📩 <strong>Check your spam folder</strong> just in case.</p>
   </div>
 
   <script>
-    UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
-  </script>
-  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+    (function () {
+      const WEBHOOK_URL = "https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire"; // ✅ n8n Production URL
+      const form = document.getElementById("memoireForm");
+      const btn  = document.getElementById("submitBtn");
+      const rgpd = document.getElementById("rgpd");
 
-  <script>
-    document.querySelector('form').addEventListener('submit', function (e) {
-      e.preventDefault(); // Empêche le rechargement
-      const form = e.target;
-      const formData = new FormData(form);
+      const widget = uploadcare.Widget("#ucUploader");
+      let lastFileInfo = null;
 
-      fetch(form.action, {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          form.style.display = 'none';
-          document.getElementById('confirmation').style.display = 'block';
-        } else {
-          alert("Erreur lors de la soumission. Veuillez réessayer.");
-        }
-      })
-      .catch(() => {
-        alert("Erreur de connexion. Veuillez réessayer.");
+      // 1) Capture la fin d'upload Uploadcare
+      widget.onUploadComplete(function (info) {
+        lastFileInfo = info; // contient .cdnUrl, .name, .size, etc.
+        console.log("Uploadcare file:", info);
       });
-    });
+
+      async function submitToWebhook() {
+        // a) validations basiques
+        if (!rgpd.checked) {
+          alert("Merci de cocher la case RGPD.");
+          return;
+        }
+        if (!lastFileInfo || !lastFileInfo.cdnUrl) {
+          alert("Veuillez téléverser votre fichier .docx (attendez la fin de l'upload).");
+          return;
+        }
+
+        // b) construit un lien direct au binaire (Uploadcare)
+        //    /-/raw/ renvoie le fichier brut, idéal pour ton nœud HTTP Extract DOCX
+        const fileUrl = (lastFileInfo.cdnUrl.endsWith("/")) ? (lastFileInfo.cdnUrl + "-/raw/") : (lastFileInfo.cdnUrl + "/-/raw/");
+
+        const payload = {
+          token : document.getElementById("token").value,
+          fileUrl,
+          email : document.getElementById("email").value.trim(),
+          langue: document.getElementById("langue").value,
+          prenom: document.getElementById("prenom").value.trim(),
+          titre : document.getElementById("titre").value.trim(),
+          nom   : document.getElementById("nom").value.trim()
+        };
+
+        btn.disabled = true; btn.textContent = "Envoi…";
+
+        try {
+          const res = await fetch(WEBHOOK_URL, {
+            method : "POST",
+            headers: { "Content-Type": "application/json" },
+            body   : JSON.stringify(payload)
+          });
+
+          const text = await res.text();
+          console.log("Webhook:", res.status, text);
+
+          if (res.status === 202) {
+            form.style.display = "none";
+            document.getElementById("confirmation").style.display = "block";
+          } else if (res.status === 401) {
+            alert("Accès non autorisé (token). Vérifie la valeur du token.");
+          } else {
+            alert("Erreur côté serveur (" + res.status + "). Réessaie plus tard.");
+          }
+        } catch (e) {
+          console.error(e);
+          alert("Erreur réseau. Réessaie plus tard.");
+        } finally {
+          btn.disabled = false; btn.textContent = "Soumettre / Submit";
+        }
+      }
+
+      btn.addEventListener("click", submitToWebhook);
+    })();
   </script>
 </body>
 </html>
