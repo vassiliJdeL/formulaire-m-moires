@@ -1,60 +1,157 @@
-<!-- Widget Uploadcare (inchangé) -->
-<script>
-  // Clé publique Uploadcare (globale)
-  UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
-</script>
-<script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Soumission de mémoire / Thesis submission</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5;padding:24px;max-width:760px;margin:auto}
+    label{font-weight:600}
+    input,select,button{font:inherit}
+    .row{margin:10px 0}
+    button{padding:10px 16px;border:1px solid #ccc;border-radius:6px;background:#111;color:#fff;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .hint{color:#555;font-size:.9rem}
+    .ok{display:none;margin-top:20px;border:1px solid #e0e0e0;padding:16px;border-radius:8px;background:#f8fff4}
+  </style>
+</head>
+<body>
+  <h2>Soumission de mémoire / Thesis submission</h2>
 
-<script>
-  const form = document.querySelector('form');
-  const widget = uploadcare.Widget('[role=uploadcare-uploader]');
+  <!-- ⚠️ METS ICI L’URL PRODUCTION DU WEBHOOK N8N -->
+  <!-- Exemple: https://<ton-espace>.app.n8n.cloud/webhook/auto-eval-memoire -->
+  <form id="mem-form" action="https://<TON_WEBHOOK_N8N>/webhook/auto-eval-memoire" method="post">
+    <div class="row">
+      <label for="prenom">Prénom / First name *</label><br>
+      <input id="prenom" name="prenom" type="text" required>
+    </div>
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    <div class="row">
+      <label for="nom">Nom / Last name *</label><br>
+      <input id="nom" name="nom" type="text" required>
+    </div>
 
-    // 1) Récupération de la valeur du widget
-    const fileValue = widget.value();
-    if (!fileValue) {
-      alert("Merci d’ajouter un fichier .docx avant d’envoyer.");
-      return;
-    }
+    <div class="row">
+      <label for="email">Email *</label><br>
+      <input id="email" name="email" type="email" required>
+    </div>
 
-    try {
-      // 2) Attendre la fin de l’upload (obligatoire)
-      const fileInfo = await fileValue.promise(); // { cdnUrl, name, ... }
+    <div class="row">
+      <label for="titre">Titre du mémoire / Thesis title *</label><br>
+      <input id="titre" name="titre" type="text" required>
+    </div>
 
-      if (!fileInfo || !fileInfo.cdnUrl) {
-        alert("Erreur Uploadcare : URL du fichier introuvable.");
+    <div class="row">
+      <label for="langue">Langue / Language *</label><br>
+      <select id="langue" name="langue" required>
+        <option value="">-- Choisissez / Select --</option>
+        <option value="français">Français / French</option>
+        <option value="anglais">Anglais / English (NZ)</option>
+      </select>
+      <div class="hint">Si “anglais” est choisi, la réponse sera en anglais néo-zélandais.</div>
+    </div>
+
+    <div class="row">
+      <label>Fichier .docx / .docx file *</label><br>
+      <!-- Uploadcare widget -->
+      <input type="hidden"
+             role="uploadcare-uploader"
+             name="file"
+             data-public-key="21d7228fa1f01ac80183"
+             data-clearable
+             data-multiple="false"
+             data-file-types=".docx" />
+      <div class="hint">Uniquement .docx · Taille conseillée &lt; 20 Mo</div>
+    </div>
+
+    <!-- Jeton (pré-rempli via ?token=...) -->
+    <input type="hidden" name="token" id="token" value="2_TOUGH_eval_5_on">
+
+    <!-- Champ que NOUS remplissons avec l’URL CDN finale du fichier -->
+    <input type="hidden" name="url" id="fileUrl" required>
+    <!-- Duplicata utile (logs) -->
+    <input type="hidden" name="fileUrl" id="fileUrl2">
+    <input type="hidden" name="filename" id="filename">
+
+    <div class="row">
+      <label><input type="checkbox" id="rgpd" required> J’accepte le traitement aux fins d’évaluation.</label>
+    </div>
+
+    <div class="row">
+      <button id="submitBtn" type="submit">Soumettre / Submit</button>
+    </div>
+  </form>
+
+  <div id="confirmation" class="ok">
+    <h3>🇫🇷 Mémoire reçu</h3>
+    <p>Merci, ta soumission a bien été enregistrée.<br>⏳ L’évaluation est en cours. Tu la recevras par email dans les prochaines minutes (vérifie tes spams).</p>
+    <hr>
+    <h3>🇬🇧 Thesis received</h3>
+    <p>Thanks, your submission has been recorded.<br>⏳ Evaluation is in progress. You’ll get it by email shortly (check spam).</p>
+  </div>
+
+  <!-- Uploadcare -->
+  <script>UPLOADCARE_PUBLIC_KEY="21d7228fa1f01ac80183";</script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+
+  <script>
+    // Pré-remplir le token via ?token=...
+    (function(){
+      const p = new URLSearchParams(location.search);
+      const t = p.get('token');
+      if (t) document.getElementById('token').value = t;
+    })();
+
+    const form = document.getElementById('mem-form');
+    const submitBtn = document.getElementById('submitBtn');
+    const widget = uploadcare.Widget('[role=uploadcare-uploader]');
+    const fileUrlInput = document.getElementById('fileUrl');
+    const fileUrl2Input = document.getElementById('fileUrl2');
+    const filenameInput = document.getElementById('filename');
+
+    // Quand l’upload est terminé, on récupère l’URL CDN
+    widget.onUploadComplete(function(info){
+      if (info && info.cdnUrl) {
+        fileUrlInput.value = info.cdnUrl;
+        fileUrl2Input.value = info.cdnUrl;
+        filenameInput.value = info.name || 'memoire.docx';
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Sécurité : exiger l’URL CDN finale
+      if (!fileUrlInput.value) {
+        alert("Le fichier n’est pas prêt. Attends la fin de l’upload (quelques secondes) puis réessaie.");
         return;
       }
 
-      // 3) Construire la charge utile du formulaire
-      const fd = new FormData(form);
+      submitBtn.disabled = true;
 
-      // On envoie explicitement une URL pour le backend
-      // Choix 1: le champ traditionnel 'url' (recommandé pour ton nœud HTTP)
-      fd.set('url', fileInfo.cdnUrl);
+      try {
+        const fd = new FormData(form);
+        // Nettoyage : on n’envoie pas la référence interne "file" (Uploadcare)
+        fd.delete('file');
 
-      // (optionnel) garder l’info d’origine utile pour logs
-      fd.set('fileUrl', fileInfo.cdnUrl);
-      fd.set('filename', fileInfo.name || 'memoire.docx');
+        const resp = await fetch(form.action, { method: 'POST', body: fd });
 
-      // Évite toute confusion côté backend
-      fd.delete('file');
-
-      // 4) POST vers ton webhook n8n
-      const resp = await fetch(form.action, { method: 'POST', body: fd });
-
-      if (resp.ok) {
-        form.style.display = 'none';
-        document.getElementById('confirmation').style.display = 'block';
-      } else {
-        const t = await resp.text().catch(() => "");
-        alert("Erreur lors de la soumission. Détail: " + (t || resp.status));
+        if (resp.ok) {
+          form.style.display = 'none';
+          document.getElementById('confirmation').style.display = 'block';
+        } else {
+          const t = await resp.text().catch(()=> "");
+          alert("Erreur lors de la soumission. Détail: " + (t || resp.status));
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erreur réseau. Merci de réessayer.");
+      } finally {
+        submitBtn.disabled = false;
       }
-    } catch (err) {
-      console.error(err);
-      alert("Erreur de connexion / upload. Réessaie.");
-    }
-  });
-</script>
+    });
+  </script>
+
+  <noscript>Active JavaScript pour utiliser le formulaire.</noscript>
+</body>
+</html>
