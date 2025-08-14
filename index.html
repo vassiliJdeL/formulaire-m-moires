@@ -1,229 +1,201 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Bienvenue dans l'espace évaluation du mémoire / Welcome to the thesis assessment area</title>
   <link rel="preconnect" href="https://ucarecdn.com" crossorigin>
   <style>
-    :root{
-      --bg:#f7f7fb; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --brand:#0f172a;
-      --ring:#2563eb; --border:#e5e7eb; --ok:#065f46; --err:#991b1b;
-    }
+    :root { --bg:#f6f7fb; --card:#fff; --text:#222; --muted:#6b7280; --accent:#111827; --ring:#e5e7eb; }
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
-      font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,"Apple Color Emoji","Segoe UI Emoji";}
-    .wrap{max-width:880px;margin:48px auto;padding:0 18px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 28px 30px;
-      box-shadow:0 8px 24px rgba(0,0,0,.06)}
-    h1{margin:0 0 8px;font-size:26px;line-height:1.25;color:var(--brand)}
-    .sub{margin:0 0 24px;color:var(--muted)}
-    /* grille propre : labels + champs sur la même ligne */
-    form{display:grid;gap:16px}
-    .row{display:grid;grid-template-columns:260px 1fr;gap:14px;align-items:center}
-    label{font-weight:600}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif; color:var(--text); background:var(--bg);}
+    .wrap{max-width:860px;margin:48px auto;padding:0 16px}
+    .card{background:var(--card); border:1px solid var(--ring); border-radius:16px; padding:28px 24px; box-shadow:0 8px 20px rgba(0,0,0,.04)}
+    h1{margin:0 0 8px; font-size:28px}
+    .sub{color:var(--muted); margin:0 0 24px}
+    form{display:grid; gap:16px}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    label{display:block; font-weight:600; margin:0 0 6px}
+    .muted{color:var(--muted); font-weight:500}
     input[type="text"],input[type="email"],select{
-      width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font:inherit;
-      transition:border-color .15s, box-shadow .15s
+      width:100%; padding:12px 14px; border:1px solid var(--ring); border-radius:10px; font-size:16px; background:#fff;
     }
-    input:focus,select:focus{outline:none;border-color:var(--ring);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
-    .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
-    .pill{display:inline-block;background:#f3f4f6;border:1px dashed #cbd5e1;border-radius:999px;padding:6px 10px;font-size:12.5px}
-    .consent{font-size:10px;line-height:1.4;color:#4b5563}
-    .actions{display:flex;gap:12px;align-items:center;margin-top:6px}
-    button{appearance:none;border:0;border-radius:10px;padding:11px 16px;background:#111827;color:#fff;font-weight:700;cursor:pointer}
-    button[disabled]{opacity:.5;cursor:not-allowed}
-    .msg{font-size:14px}
-    .ok{color:var(--ok);display:none}
-    .err{color:var(--err);display:none}
-    @media (max-width:760px){ .row{grid-template-columns:1fr} }
+    .fileHelp{font-size:13px; color:var(--muted); margin-top:6px}
+    .badge{display:inline-block;background:#f1f5f9;border:1px solid var(--ring); padding:8px 10px; border-radius:999px; font-size:13px}
+    .rgpd{font-size:10px; line-height:1.4; color:#374151}
+    .actions{margin-top:8px}
+    button{
+      appearance:none; border:0; border-radius:12px; background:var(--accent); color:#fff;
+      padding:12px 18px; font-weight:700; cursor:pointer;
+    }
+    .hidden{display:none}
+    .ok{background:#065f46;color:#fff;border-color:#065f46}
   </style>
 
-  <!-- Uploadcare -->
-  <script>window.UPLOADCARE_PUBLIC_KEY="21d7228fa1f01ac80183";</script>
-  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" defer></script>
+  <!-- Uploadcare : configuration AVANT le script -->
+  <script>
+    // ta clé publique
+    window.UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
+
+    // IMPORTANT : on force ici un widget "documents" (pas imagesOnly)
+    window.UPLOADCARE_SETTINGS = {
+      imagesOnly: false,          // autorise les documents
+      preferredTypes: 'document', // l’UI privilégie les fichiers doc/pdf
+      tabs: 'file url',           // onglets visibles
+      multiple: false
+    };
+  </script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>Bienvenue dans l'espace d'évaluation du mémoire / Welcome to the thesis assessment area</h1>
+      <h1>Bienvenue dans l'espace évaluation du mémoire / Welcome to the thesis assessment area</h1>
       <p class="sub">Merci de compléter soigneusement tous les champs ci-dessous. / Please fill in all fields carefully.</p>
 
-      <form id="memoireForm" action="https://vassili-jdel.app.n8n.cloud/webhook-test/auto-eval-memoire" method="post" novalidate>
-        <div class="row">
-          <label for="prenom">Prénom / Forename *</label>
-          <input id="prenom" name="prenom" type="text" required autocomplete="given-name" />
-        </div>
+      <form id="memoireForm"
+        action="https://vassili-jdel.app.n8n.cloud/webhook-test/auto-eval-memoire"  <!-- passe en /webhook/ quand tu seras prêt -->
+        method="post">
 
         <div class="row">
-          <label for="nom">Nom / Name *</label>
-          <input id="nom" name="nom" type="text" required autocomplete="family-name" />
-        </div>
-
-        <div class="row">
-          <label for="email">Email *</label>
-          <input id="email" name="email" type="email" required autocomplete="email" placeholder="name@example.com" />
-        </div>
-
-        <div class="row">
-          <label for="titre">Titre du mémoire / Thesis title *</label>
-          <input id="titre" name="titre" type="text" required />
-        </div>
-
-        <div class="row">
-          <label for="langue">Langue / Language *</label>
-          <select id="langue" name="langue" required>
-            <option value="">—</option>
-            <option value="français">Français / French</option>
-            <option value="anglais">Anglais / English</option>
-          </select>
-        </div>
-
-        <div class="row" style="align-items:start">
-          <label>Fichier .doc ou .docx *</label>
           <div>
-            <!-- IMPORTANT : pas de data-file-types ici → on laisse Uploadcare accepter, on filtrera nous-mêmes -->
+            <label for="prenom">Prénom / <span class="muted">Forename</span> *</label>
+            <input id="prenom" name="prenom" type="text" required autocomplete="given-name">
+          </div>
+          <div>
+            <label for="nom">Nom / <span class="muted">Name</span> *</label>
+            <input id="nom" name="nom" type="text" required autocomplete="family-name">
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="email">Email *</label>
+            <input id="email" name="email" type="email" required autocomplete="email" placeholder="prenom.nom@example.com">
+          </div>
+          <div>
+            <label for="titre">Titre du mémoire / <span class="muted">Thesis title</span> *</label>
+            <input id="titre" name="titre" type="text" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="langue">Langue / <span class="muted">Language</span> *</label>
+            <select id="langue" name="langue" required>
+              <option value="">—</option>
+              <option value="français">Français / French</option>
+              <option value="anglais">Anglais / English</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="fdocx">Fichier .docx / <span class="muted">.docx file</span> *</label>
+            <!-- Uploadcare widget -->
             <input
               id="fdocx"
               type="hidden"
               role="uploadcare-uploader"
               name="file"
-              data-public-key="21d7228fa1f01ac80183"
-              data-system-dialog="true"
-              data-multiple="false"
               data-clearable
-              data-images-only="false"
-            />
-            <div class="hint"><span class="pill">30 000 mots maximum — 30,000 words maximum</span></div>
+              data-multiple="false"
+              data-file-types=".doc,.docx" />
+            <div class="fileHelp">
+              <span class="badge">30 000 mots maximum — 30,000 words maximum</span>
+            </div>
           </div>
         </div>
 
-        <div class="row" style="align-items:flex-start">
-          <label for="rgpd">RGPD / GDPR consent *</label>
-          <div class="consent">
-            <label style="display:flex;gap:10px;align-items:flex-start">
-              <input type="checkbox" id="rgpd" name="rgpd" required />
-              <span>
-                <strong>FR :</strong> Les données collectées via ce formulaire sont utilisées pour l’évaluation du mémoire de fin d’études.
-                Le fichier téléversé n’est pas stocké. Il est supprimé automatiquement à la fin de l’évaluation. Vous pouvez exercer vos droits d'accès,
-                de rectification, de suppression, en nous contactant à
-                <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>.
-                Ce formulaire est conforme au RGPD car il recueille votre consentement explicite via la case à cocher ci-contre.
-                <br><br>
-                <strong>EN (UK):</strong> The data collected through this form is used solely to assess your master’s thesis.
-                The uploaded file is not stored and is automatically deleted at the end of the evaluation. You can exercise your rights of access,
-                rectification and erasure by contacting
-                <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>.
-                This form complies with the UK GDPR as it collects your explicit consent via the checkbox.
-              </span>
-            </label>
-          </div>
+        <div>
+          <label class="rgpd">
+            <input type="checkbox" id="rgpd" name="rgpd" required>
+            <strong>RGPD / GDPR consent *</strong><br>
+            FR : Les données collectées via ce formulaire sont utilisées pour l’évaluation du mémoire de fin d’études.
+            Le fichier téléversé n’est pas stocké. Il est supprimé automatiquement à la fin de l’évaluation.
+            Vous pouvez exercer vos droits d'accès, de rectification, de suppression, en nous contactant à
+            <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>.
+            Ce formulaire est conforme au RGPD car il recueille votre consentement explicite via la case à cocher ci-contre.<br><br>
+            EN (UK): The data collected through this form is used solely to assess your master’s thesis. The uploaded file
+            is not stored and is automatically deleted at the end of the evaluation. You can exercise your rights of access,
+            rectification and erasure by contacting
+            <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>.
+            This form complies with the UK GDPR as it collects your explicit consent via the checkbox.
+          </label>
         </div>
+
+        <!-- Jeton simple pour n8n -->
+        <input type="hidden" name="token" value="2_TOUGH_eval_5_on" />
 
         <div class="actions">
-          <button id="btn" type="submit">Soumettre / Submit</button>
-          <span id="msg" class="msg"></span>
+          <button type="submit" id="btn">Soumettre / Submit</button>
+          <span id="msg" class="fileHelp"></span>
         </div>
-
-        <!-- Jeton pour n8n -->
-        <input type="hidden" name="token" value="2_TOUGH_eval_5_on" />
       </form>
-    </div>
 
-    <!-- Confirmation -->
-    <div id="okBlock" class="ok" style="margin-top:16px">
-      ✅ Mémoire reçu / Thesis received — l’évaluation sera envoyée par email sous peu.
+      <!-- écran de confirmation -->
+      <div id="confirm" class="hidden">
+        <p class="ok badge">Merci — ta soumission a été reçue. / Thanks — your submission has been received.</p>
+      </div>
     </div>
-    <div id="errBlock" class="err" style="margin-top:16px"></div>
   </div>
 
   <script>
-    // Helpers
-    const $ = (s) => document.querySelector(s);
-    const setMsg = (txt, ok=false) => {
-      const el = $('#msg');
-      el.textContent = txt || '';
-      el.style.color = ok ? '#065f46' : '#991b1b';
-    };
-    const showOK = (txt) => { const b=$('#okBlock'); b.textContent = txt; b.style.display='block'; };
-    const showERR = (txt) => { const b=$('#errBlock'); b.textContent = txt; b.style.display='block'; };
+    // ---- Logique de soumission
+    const form = document.getElementById('memoireForm');
+    const btn  = document.getElementById('btn');
+    const msg  = document.getElementById('msg');
 
-    // Contrôle strict côté client : extension .doc/.docx
-    const isDocOrDocx = (name='') => /\.docx?$/i.test((name||'').trim());
+    // Récupère le widget Uploadcare après chargement
+    const w = uploadcare.Widget('#fdocx');
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const form = $('#memoireForm');
-      const btn  = $('#btn');
-      const widget = uploadcare.Widget('#fdocx'); // Uploadcare widget
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = '';
 
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        setMsg('');
-        $('#okBlock').style.display = 'none';
-        $('#errBlock').style.display = 'none';
-
-        // Validation de base
-        const required = ['#prenom','#nom','#email','#titre','#langue','#rgpd'];
-        for (const sel of required) {
-          const el = $(sel);
-          if (!el || (el.type === 'checkbox' ? !el.checked : !el.value.trim())) {
-            setMsg('Merci de compléter tous les champs obligatoires.', false);
-            return;
-          }
+      try {
+        // 1) Vérifier que le widget a bien un fichier
+        const v = w.value();
+        if (!v) {
+          msg.textContent = "Merci d’ajouter un fichier .docx avant d’envoyer.";
+          return;
         }
-
-        // Récupérer le fichier Uploadcare
-        const value = widget.value();
-        if (!value) { setMsg('Merci d’ajouter un fichier .doc ou .docx.', false); return; }
 
         btn.disabled = true;
 
-        try {
-          const info = await value.promise(); // { cdnUrl, name, mimeType, ... }
+        // 2) Attendre la fin de l'upload + récupérer les infos
+        const info = await v.promise(); // { name, cdnUrl, mimeType, ... }
 
-          // (diagnostic utile) — laisse le log activé le temps du test
-          console.log('Uploadcare info:', { name: info?.name, mime: info?.mimeType, cdnUrl: info?.cdnUrl });
+        // Contrôle minimum côté client sur le type
+        const isDocx = /\.docx$/i.test(info.name) ||
+                       info.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        if (!isDocx) {
+          btn.disabled = false;
+          msg.textContent = "Le fichier doit être au format .docx.";
+          return;
+        }
 
-          if (!info || !info.cdnUrl) {
-            setMsg("Erreur Uploadcare : URL du fichier introuvable.", false);
-            btn.disabled = false; return;
-          }
+        // 3) Construire le payload pour n8n
+        const fd = new FormData(form);
+        fd.set('url', info.cdnUrl);       // champ que ton nœud HTTP attend
+        fd.set('fileUrl', info.cdnUrl);   // pour logs éventuels
+        fd.set('filename', info.name);
+        fd.delete('file');                // évite les doublons (Uploadcare enverrait sinon un UUID brut)
 
-          if (!isDocOrDocx(info.name || '')) {
-            setMsg("Seuls les fichiers .doc ou .docx sont acceptés.", false);
-            btn.disabled = false; return;
-          }
-
-          // Construire la charge utile pour n8n
-          const fd = new FormData(form);
-          fd.set('url', info.cdnUrl);       // champ attendu par ton nœud HTTP
-          fd.set('fileUrl', info.cdnUrl);   // pour logs
-          fd.set('filename', info.name || 'memoire.docx');
-          // Nettoyage : ne pas envoyer la ref interne du widget
-          fd.delete('file');
-
-          setMsg('Envoi en cours…', true);
-
-          const resp = await fetch(form.action, { method: 'POST', body: fd });
-
-          if (resp.ok) {
-            form.reset();
-            widget.value(null);
-            setMsg('');
-            showOK('✅ Mémoire reçu. L’évaluation arrive par email.');
-          } else {
-            const t = await resp.text().catch(()=> '');
-            setMsg(`Erreur serveur (${resp.status}). ${t||''}`, false);
-            showERR(`Erreur serveur (${resp.status}). ${t||''}`);
-          }
-        } catch (err) {
-          console.error(err);
-          setMsg("Erreur réseau / upload. Réessaie.", false);
-          showERR("Erreur réseau / upload. Réessaie.");
-        } finally {
+        // 4) POST vers n8n
+        const resp = await fetch(form.action, { method:'POST', body:fd });
+        if (resp.ok) {
+          form.classList.add('hidden');
+          document.getElementById('confirm').classList.remove('hidden');
+        } else {
+          const t = await resp.text().catch(()=> '');
+          msg.textContent = "Erreur lors de la soumission. Détail: " + (t || resp.status);
           btn.disabled = false;
         }
-      });
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "Erreur réseau / upload. Réessaie.";
+        btn.disabled = false;
+      }
     });
   </script>
 </body>
