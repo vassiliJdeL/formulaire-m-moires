@@ -2,156 +2,149 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Soumission de mémoire / Thesis submission</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bienvenue dans l'espace évaluation du mémoire / Welcome to the thesis assessment area</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5;padding:24px;max-width:760px;margin:auto}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;line-height:1.45;margin:0;background:#fafafa;color:#222}
+    .wrap{max-width:760px;margin:40px auto;padding:0 16px}
+    h1{font-size:1.6rem;margin:0 0 8px}
+    .muted{color:#666;margin:0 0 24px}
     label{font-weight:600}
-    input,select,button{font:inherit}
-    .row{margin:10px 0}
-    button{padding:10px 16px;border:1px solid #ccc;border-radius:6px;background:#111;color:#fff;cursor:pointer}
+    input[type="text"],input[type="email"],select{width:100%;max-width:520px;padding:10px 12px;margin-top:6px;margin-bottom:18px;border:1px solid #ccc;border-radius:8px;background:#fff}
+    .hint{font-size:.92rem;color:#555;margin:-10px 0 18px}
+    .consigne{font-size:.95rem;background:#fff3cd;border:1px solid #ffe08a;color:#6b5300;padding:10px 12px;border-radius:8px;display:inline-block;margin:6px 0 18px}
+    button{background:#111;color:#fff;border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer}
     button:disabled{opacity:.6;cursor:not-allowed}
-    .hint{color:#555;font-size:.9rem}
-    .ok{display:none;margin-top:20px;border:1px solid #e0e0e0;padding:16px;border-radius:8px;background:#f8fff4}
+    .ok{display:none;margin-top:24px;background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20;padding:16px;border-radius:10px}
+    .rgpd{margin:14px 0}
+    .rgpd p{margin:8px 0}
+    .small{font-size:.92rem;color:#555}
   </style>
+
+  <!-- Uploadcare widget -->
+  <script>
+    window.UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
+  </script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" defer></script>
 </head>
 <body>
-  <h2>Soumission de mémoire / Thesis submission</h2>
+  <div class="wrap">
+    <h1>Soumission de mémoire / Thesis submission</h1>
+    <p class="muted">Merci de compléter soigneusement tous les champs ci-dessous.</p>
 
-  <!-- ⚠️ METS ICI L’URL PRODUCTION DU WEBHOOK N8N -->
-  <!-- Exemple: https://<ton-espace>.app.n8n.cloud/webhook/auto-eval-memoire -->
-  <form id="mem-form" action="https://<TON_WEBHOOK_N8N>/webhook/auto-eval-memoire" method="post">
-    <div class="row">
-      <label for="prenom">Prénom / First name *</label><br>
-      <input id="prenom" name="prenom" type="text" required>
-    </div>
+    <!-- Formulaire -->
+    <form id="memoire-form" action="https://vassili-jdel.app.n8n.cloud/webhook-test/auto-eval-memoire" method="post" novalidate>
+      <label for="prenom">Prénom / First name *</label>
+      <input type="text" id="prenom" name="prenom" required />
 
-    <div class="row">
-      <label for="nom">Nom / Last name *</label><br>
-      <input id="nom" name="nom" type="text" required>
-    </div>
+      <label for="nom">Nom / Last name *</label>
+      <input type="text" id="nom" name="nom" required />
 
-    <div class="row">
-      <label for="email">Email *</label><br>
-      <input id="email" name="email" type="email" required>
-    </div>
+      <label for="email">Email *</label>
+      <input type="email" id="email" name="email" required />
 
-    <div class="row">
-      <label for="titre">Titre du mémoire / Thesis title *</label><br>
-      <input id="titre" name="titre" type="text" required>
-    </div>
+      <label for="titre">Titre du mémoire / Thesis title *</label>
+      <input type="text" id="titre" name="titre" required />
 
-    <div class="row">
-      <label for="langue">Langue / Language *</label><br>
+      <label for="langue">Langue / Language *</label>
       <select id="langue" name="langue" required>
-        <option value="">-- Choisissez / Select --</option>
+        <option value="">—</option>
         <option value="français">Français / French</option>
-        <option value="anglais">Anglais / English (NZ)</option>
+        <option value="anglais">Anglais / English</option>
       </select>
-      <div class="hint">Si “anglais” est choisi, la réponse sera en anglais néo-zélandais.</div>
+
+      <label for="file">Fichier .docx / .docx file *</label>
+      <input
+        type="hidden"
+        role="uploadcare-uploader"
+        name="file"
+        data-public-key="21d7228fa1f01ac80183"
+        data-multiple="false"
+        data-clearable
+        data-file-types="docx"
+        data-input-accept=".docx"
+      />
+      <div class="consigne">30 000 mots maximum – 30,000 words maximum</div>
+
+      <div class="rgpd">
+        <label>
+          <input type="checkbox" id="rgpd" name="rgpd" required />
+          <span><strong>RGPD / GDPR consent *</strong></span>
+        </label>
+        <p class="small">
+          <strong>FR :</strong> Les données collectées via ce formulaire sont utilisées pour l’évaluation du mémoire de fin d’études.
+          Le fichier téléversé n’est pas stocké. Il est supprimé automatiquement à la fin de l’évaluation. Vous pouvez exercer vos droits
+          d'accès, de rectification, de suppression, en nous contactant à
+          <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>.
+          Ce formulaire est conforme au RGPD car il recueille votre consentement explicite via la case à cocher ci-contre.
+        </p>
+        <p class="small">
+          <strong>EN (UK):</strong> The data collected through this form is used solely to assess your master’s thesis.
+          The uploaded file is not stored and is automatically deleted at the end of the evaluation. You can exercise your rights of access,
+          rectification and erasure by contacting
+          <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>.
+          This form complies with the UK GDPR as it collects your explicit consent via the checkbox.
+        </p>
+      </div>
+
+      <input type="hidden" name="token" value="2_TOUGH_eval_5_on" />
+      <input type="hidden" name="url" value="" />
+      <input type="hidden" name="fileUrl" value="" />
+      <input type="hidden" name="filename" value="" />
+
+      <button type="submit" id="submitBtn">Soumettre / Submit</button>
+    </form>
+
+    <div id="confirmation" class="ok">
+      <h2>✅ Envoi confirmé</h2>
+      <p>Nous traitons ton évaluation. Tu la recevras par email dans les prochaines minutes.</p>
+      <p><em>We are processing your assessment. You’ll receive it by email shortly.</em></p>
     </div>
-
-    <div class="row">
-      <label>Fichier .docx / .docx file *</label><br>
-      <!-- Uploadcare widget -->
-      <input type="hidden"
-             role="uploadcare-uploader"
-             name="file"
-             data-public-key="21d7228fa1f01ac80183"
-             data-clearable
-             data-multiple="false"
-             data-file-types=".docx" />
-      <div class="hint">Uniquement .docx · Taille conseillée &lt; 20 Mo</div>
-    </div>
-
-    <!-- Jeton (pré-rempli via ?token=...) -->
-    <input type="hidden" name="token" id="token" value="2_TOUGH_eval_5_on">
-
-    <!-- Champ que NOUS remplissons avec l’URL CDN finale du fichier -->
-    <input type="hidden" name="url" id="fileUrl" required>
-    <!-- Duplicata utile (logs) -->
-    <input type="hidden" name="fileUrl" id="fileUrl2">
-    <input type="hidden" name="filename" id="filename">
-
-    <div class="row">
-      <label><input type="checkbox" id="rgpd" required> J’accepte le traitement aux fins d’évaluation.</label>
-    </div>
-
-    <div class="row">
-      <button id="submitBtn" type="submit">Soumettre / Submit</button>
-    </div>
-  </form>
-
-  <div id="confirmation" class="ok">
-    <h3>🇫🇷 Mémoire reçu</h3>
-    <p>Merci, ta soumission a bien été enregistrée.<br>⏳ L’évaluation est en cours. Tu la recevras par email dans les prochaines minutes (vérifie tes spams).</p>
-    <hr>
-    <h3>🇬🇧 Thesis received</h3>
-    <p>Thanks, your submission has been recorded.<br>⏳ Evaluation is in progress. You’ll get it by email shortly (check spam).</p>
   </div>
 
-  <!-- Uploadcare -->
-  <script>UPLOADCARE_PUBLIC_KEY="21d7228fa1f01ac80183";</script>
-  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
-
   <script>
-    // Pré-remplir le token via ?token=...
-    (function(){
-      const p = new URLSearchParams(location.search);
-      const t = p.get('token');
-      if (t) document.getElementById('token').value = t;
-    })();
+    window.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('memoire-form');
+      const submitBtn = document.getElementById('submitBtn');
+      const widget = uploadcare.Widget('[role=uploadcare-uploader]');
 
-    const form = document.getElementById('mem-form');
-    const submitBtn = document.getElementById('submitBtn');
-    const widget = uploadcare.Widget('[role=uploadcare-uploader]');
-    const fileUrlInput = document.getElementById('fileUrl');
-    const fileUrl2Input = document.getElementById('fileUrl2');
-    const filenameInput = document.getElementById('filename');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    // Quand l’upload est terminé, on récupère l’URL CDN
-    widget.onUploadComplete(function(info){
-      if (info && info.cdnUrl) {
-        fileUrlInput.value = info.cdnUrl;
-        fileUrl2Input.value = info.cdnUrl;
-        filenameInput.value = info.name || 'memoire.docx';
-      }
-    });
+        if (!form.checkValidity()) { form.reportValidity(); return; }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+        const fileValue = widget.value();
+        if (!fileValue) { alert("Merci d’ajouter un fichier .docx avant d’envoyer."); return; }
 
-      // Sécurité : exiger l’URL CDN finale
-      if (!fileUrlInput.value) {
-        alert("Le fichier n’est pas prêt. Attends la fin de l’upload (quelques secondes) puis réessaie.");
-        return;
-      }
+        submitBtn.disabled = true;
 
-      submitBtn.disabled = true;
+        try {
+          const info = await fileValue.promise(); // { cdnUrl, name, ... }
+          if (!info || !info.cdnUrl) { alert("Erreur Uploadcare : URL du fichier introuvable."); submitBtn.disabled = false; return; }
 
-      try {
-        const fd = new FormData(form);
-        // Nettoyage : on n’envoie pas la référence interne "file" (Uploadcare)
-        fd.delete('file');
+          const fd = new FormData(form);
+          fd.set('url', info.cdnUrl);
+          fd.set('fileUrl', info.cdnUrl);
+          fd.set('filename', info.name || 'memoire.docx');
+          fd.delete('file');
 
-        const resp = await fetch(form.action, { method: 'POST', body: fd });
+          const resp = await fetch(form.action, { method: 'POST', body: fd });
 
-        if (resp.ok) {
-          form.style.display = 'none';
-          document.getElementById('confirmation').style.display = 'block';
-        } else {
-          const t = await resp.text().catch(()=> "");
-          alert("Erreur lors de la soumission. Détail: " + (t || resp.status));
+          if (resp.ok) {
+            form.style.display = 'none';
+            document.getElementById('confirmation').style.display = 'block';
+          } else {
+            const t = await resp.text().catch(() => "");
+            alert("Erreur lors de la soumission. Détail: " + (t || resp.status));
+            submitBtn.disabled = false;
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Erreur réseau / upload. Réessaie.");
+          submitBtn.disabled = false;
         }
-      } catch (err) {
-        console.error(err);
-        alert("Erreur réseau. Merci de réessayer.");
-      } finally {
-        submitBtn.disabled = false;
-      }
+      });
     });
   </script>
-
-  <noscript>Active JavaScript pour utiliser le formulaire.</noscript>
 </body>
 </html>
