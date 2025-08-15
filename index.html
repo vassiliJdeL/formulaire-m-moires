@@ -37,7 +37,8 @@
     <h1>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</h1>
     <p class="sub">Merci de compléter soigneusement tous les champs ci-dessous. / Please fill in all fields carefully.</p>
 
-    <form id="memoire-form" action="https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire" method="post" novalidate>
+    <!-- ✨ Changement ici : action = URL PROD qui marche -->
+    <form id="memoire-form" action="https://vassili-jdel.app.n8n.cloud/webhook/sanity-915f" method="post" novalidate>
       <div><label for="prenom">Prénom / Forename *</label><input id="prenom" name="prenom" required></div>
       <div><label for="nom">Nom / Surname *</label><input id="nom" name="nom" required></div>
 
