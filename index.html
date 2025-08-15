@@ -19,6 +19,7 @@
     .pill{display:inline-block;background:#fde9c6;border:1px solid #f2c27b;padding:8px 10px;border-radius:999px;font-size:12.5px}
     .consent{font-size:10px;line-height:1.4;color:#333}
     button{background:#111827;color:#fff;border:0;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer}
+    button[disabled]{opacity:.6;cursor:not-allowed}
     .confirm{display:none;margin-top:18px;padding:16px;border:1px solid #cfe7cf;background:#eef9ee;border-radius:10px}
     .error{color:#b40000;margin-top:8px}
   </style>
@@ -92,12 +93,16 @@
   </div>
 
   <script>
-    // Empêcher le mode images-only du widget
+    // Assure que le widget n'est pas limité aux images
     try { uploadcare.settings.imagesOnly = false; } catch (e) {}
 
     const form   = document.getElementById('memoire-form');
     const widget = uploadcare.Widget('#uc-file');
     const errBox = document.getElementById('upload-error');
+
+    // Nom et valeur du header attendus par le Webhook n8n (Header Auth)
+    const HEADER_NAME  = 'WebhookSubmitToken';
+    const HEADER_VALUE = '2_TOUGH_eval_5_on';
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -116,30 +121,27 @@
 
         const isDocx = info.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                     || /\.docx$/i.test(info.name || '');
-        if (!isDocx) {
-          errBox.textContent = "Seuls les fichiers .docx sont autorisés.";
-          errBox.style.display = 'block';
-          return;
-        }
-        if (info.size && info.size > 10 * 1024 * 1024) {
-          errBox.textContent = "Fichier trop volumineux (>10 MB sur le plan gratuit).";
-          errBox.style.display = 'block';
-          return;
-        }
+        if (!isDocx) { errBox.textContent = "Seuls les fichiers .docx sont autorisés."; errBox.style.display='block'; return; }
+        if (info.size && info.size > 10 * 1024 * 1024) { errBox.textContent = "Fichier trop volumineux (>10 MB sur le plan gratuit)."; errBox.style.display='block'; return; }
 
-        // Construire le payload pour n8n
+        // Construire le payload vers n8n (on envoie l'URL Uploadcare, pas le binaire)
         const fd = new FormData(form);
-        fd.delete('file'); // ne pas envoyer la valeur brute du widget
-        fd.set('url', info.cdnUrl);
-        fd.set('fileUrl', info.cdnUrl);
+        fd.delete('file');                 // ne pas envoyer la valeur brute du widget
+        fd.set('url', info.cdnUrl);        // champ lu par ton flow n8n
+        fd.set('fileUrl', info.cdnUrl);    // utile pour logs
         fd.set('filename', info.name || 'memoire.docx');
 
-        // 👉 Authentification par header personnalisé "Token"
+        // Authentification par en-tête personnalisé EXACTEMENT "WebhookSubmitToken"
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+
         const resp = await fetch(form.action, {
           method: 'POST',
           body: fd,
-          headers: { 'Token': '2_TOUGH_eval_5_on' } // Doit correspondre à la Credential "Header Auth" du webhook
+          headers: { [HEADER_NAME]: HEADER_VALUE }
         });
+
+        btn.disabled = false;
 
         if (resp.ok) {
           form.style.display = 'none';
