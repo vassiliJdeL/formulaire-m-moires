@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <title>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- PROD n8n: workflow ACTIVÉ, URL /webhook/auto-eval-memoire -->
   <style>
     body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#f6f7fb;margin:0}
     .wrap{max-width:860px;margin:40px auto;padding:24px 28px;background:#fff;border-radius:14px;box-shadow:0 6px 30px rgba(0,0,0,.08)}
@@ -96,9 +95,9 @@
     const widget = uploadcare.Widget('#uc-file');
     const errBox = document.getElementById('upload-error');
 
-    // Header Auth n8n : doit correspondre à la config du Webhook
-    const N8N_HEADER_NAME  = 'token';
-    const N8N_HEADER_VALUE = '2_TOUGH_eval_5_on';
+    // Identifiants BASIC à faire correspondre à n8n
+    const USERNAME = 'formuser';
+    const PASSWORD = '2_TOUGH_eval_5_on';
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -106,11 +105,7 @@
       errBox.textContent   = '';
 
       const v = widget.value();
-      if (!v) {
-        errBox.textContent = "Merci d’ajouter un fichier .docx avant d’envoyer.";
-        errBox.style.display = 'block';
-        return;
-      }
+      if (!v) { errBox.textContent = "Merci d’ajouter un fichier .docx avant d’envoyer."; errBox.style.display='block'; return; }
 
       try {
         const info = await v.promise(); // { cdnUrl, name, mimeType, size, ... }
@@ -121,15 +116,16 @@
         if (info.size && info.size > 10 * 1024 * 1024) { errBox.textContent = "Fichier >10 MB (plan gratuit)."; errBox.style.display='block'; return; }
 
         const fd = new FormData(form);
-        fd.delete('file');                   // ne pas envoyer la valeur brute du widget
-        fd.set('url', info.cdnUrl);          // valeur que lira n8n
-        fd.set('fileUrl', info.cdnUrl);      // pour logs éventuels
+        fd.delete('file'); // ne pas envoyer la valeur brute du widget
+        fd.set('url', info.cdnUrl);
+        fd.set('fileUrl', info.cdnUrl);
         fd.set('filename', info.name || 'memoire.docx');
 
+        const auth = btoa(`${USERNAME}:${PASSWORD}`);
         const resp = await fetch(form.action, {
           method: 'POST',
           body: fd,
-          headers: { [N8N_HEADER_NAME]: N8N_HEADER_VALUE }
+          headers: { Authorization: `Basic ${auth}` }
         });
 
         if (resp.ok) {
