@@ -1,182 +1,93 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <title>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- PROD n8n: /webhook/auto-eval-memoire (workflow ACTIVÉ) -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Évaluation mémoire</title>
   <style>
-    body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#f6f7fb;margin:0}
-    .wrap{max-width:860px;margin:40px auto;padding:24px 28px;background:#fff;border-radius:14px;box-shadow:0 6px 30px rgba(0,0,0,.08)}
-    h1{font-size:28px;margin:0 0 6px}
-    .sub{color:#666;margin:0 0 22px}
-    form{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
-    label{font-weight:600;font-size:14px}
-    input[type=text],input[type=email],select{width:100%;padding:10px 12px;border:1px solid #d5d7de;border-radius:10px;background:#fff;font-size:14px}
-    .full{grid-column:1 / -1}
-    .row{display:flex;align-items:center;gap:10px}
-    .pill{display:inline-block;background:#fde9c6;border:1px solid #f2c27b;padding:8px 10px;border-radius:999px;font-size:12.5px}
-    .consent{font-size:10px;line-height:1.4;color:#333}
-    button{background:#111827;color:#fff;border:0;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer}
-    .confirm{display:none;margin-top:18px;padding:16px;border:1px solid #cfe7cf;background:#eef9ee;border-radius:10px}
-    .error{color:#b40000;margin-top:8px}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1669c1;
+    }
   </style>
-
-  <!-- Uploadcare v3 -->
-  <script>
-    window.UPLOADCARE_LOCALE = 'fr';
-    window.UPLOADCARE_TABS = 'file url';
-    window.UPLOADCARE_CLEARABLE = true;
-  </script>
-  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</h1>
-    <p class="sub">Merci de compléter soigneusement tous les champs ci-dessous. / Please fill in all fields carefully.</p>
+<div class="container">
+  <h1>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</h1>
+  <form id="memoireForm">
+    <input type="text" name="firstname" placeholder="Prénom / Forename *" required>
+    <input type="text" name="lastname" placeholder="Nom / Surname *" required>
+    <input type="email" name="email" placeholder="Email *" required>
+    <input type="text" name="titlefr" placeholder="Titre du mémoire *" required>
+    <input type="text" name="titleen" placeholder="Thesis title *" required>
+    <select name="language" required>
+      <option value="">Langue / Language *</option>
+      <option value="français">Français / French</option>
+      <option value="anglais">Anglais / English</option>
+    </select>
+    <input type="file" name="file" accept=".doc,.docx" required>
+    <button type="submit">Soumettre / Submit</button>
+  </form>
+  <div id="result"></div>
+</div>
 
-    <form id="memoire-form" action="https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire" method="post" novalidate>
-      <div>
-        <label for="prenom">Prénom / Forename *</label>
-        <input type="text" id="prenom" name="prenom" required>
-      </div>
-      <div>
-        <label for="nom">Nom / Surname *</label>
-        <input type="text" id="nom" name="nom" required>
-      </div>
+<script>
+document.getElementById('memoireForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const fd = new FormData(form);
 
-      <div class="full">
-        <label for="email">Email *</label>
-        <input type="email" id="email" name="email" required>
-      </div>
+  // URL du webhook en Production
+  const webhookUrl = "https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire";
+  
+  // Token à insérer dans le header
+  const tokenValue = "2_TOUGH_eval_5_on";
 
-      <div>
-        <label for="titre">Titre du mémoire *</label>
-        <input type="text" id="titre" name="titre" required>
-      </div>
-      <div>
-        <label for="title">Thesis title *</label>
-        <input type="text" id="title" name="title" required>
-      </div>
-
-      <div class="full row">
-        <label for="langue" style="min-width:180px">Langue / Language *</label>
-        <select id="langue" name="langue" required>
-          <option value="">—</option>
-          <option value="français">Français / French</option>
-          <option value="anglais">Anglais / English</option>
-        </select>
-      </div>
-
-      <div class="full">
-        <label for="uc-file">Fichier .docx / .docx file *</label>
-        <input
-          type="hidden"
-          role="uploadcare-uploader"
-          id="uc-file"
-          name="file"
-          data-public-key="21d7228fa1f01ac80183"
-          data-clearable
-          data-images-only="false"
-          data-file-types=".docx"
-          data-multiple="false"
-          data-input-accept-types=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        />
-        <div class="pill">30 000 mots maximum — 30,000 words maximum</div>
-        <div id="upload-error" class="error" style="display:none"></div>
-      </div>
-
-      <div class="full">
-        <label class="row" style="align-items:flex-start">
-          <input type="checkbox" name="rgpd" required style="margin-top:4px">
-          <span class="consent">
-            <strong>FR :</strong> Les données collectées via ce formulaire sont utilisées pour l’évaluation du mémoire de fin d’études.
-            Le fichier téléversé n’est pas stocké et est supprimé automatiquement à la fin de l’évaluation. Vous pouvez exercer vos droits
-            d’accès, de rectification et de suppression en nous contactant à <em>vassili.joannides.de.lautour@gmail.com</em>.<br><br>
-            <strong>EN (UK):</strong> The data collected through this form is used solely to assess your master’s thesis.
-            The uploaded file is not stored and is automatically deleted after the assessment. You can exercise your rights of access,
-            rectification and erasure by contacting <em>vassili.joannides.de.lautour@gmail.com</em>.
-          </span>
-        </label>
-      </div>
-
-      <div class="full">
-        <button type="submit">Soumettre / Submit</button>
-      </div>
-    </form>
-
-    <div id="confirmation" class="confirm">
-      <strong>✅ Soumission reçue.</strong><br>
-      L’évaluation est en cours. Tu la recevras par email dans quelques minutes.
-    </div>
-  </div>
-
-  <script>
-    // Empêcher le mode images-only du widget
-    try { uploadcare.settings.imagesOnly = false; } catch (e) {}
-
-    const form   = document.getElementById('memoire-form');
-    const widget = uploadcare.Widget('#uc-file');
-    const errBox = document.getElementById('upload-error');
-
-    // Header Auth n8n
-    const N8N_HEADER_NAME  = 'token';
-    const N8N_HEADER_VALUE = '2_TOUGH_eval_5_on';
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      errBox.style.display = 'none';
-      errBox.textContent   = '';
-
-      const v = widget.value();
-      if (!v) {
-        errBox.textContent = "Merci d’ajouter un fichier .docx avant d’envoyer.";
-        errBox.style.display = 'block';
-        return;
-      }
-
-      try {
-        const info = await v.promise(); // { cdnUrl, name, mimeType, size, ... }
-
-        const isDocx = info.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    || /\.docx$/i.test(info.name || '');
-        if (!isDocx) {
-          errBox.textContent = "Seuls les fichiers .docx sont autorisés.";
-          errBox.style.display = 'block';
-          return;
-        }
-        if (info.size && info.size > 10 * 1024 * 1024) {
-          errBox.textContent = "Fichier trop volumineux (>10 MB sur le plan gratuit).";
-          errBox.style.display = 'block';
-          return;
-        }
-
-        const fd = new FormData(form);
-        fd.delete('file'); // ne pas envoyer la valeur brute du widget
-        fd.set('url', info.cdnUrl);
-        fd.set('fileUrl', info.cdnUrl);
-        fd.set('filename', info.name || 'memoire.docx');
-
-        const resp = await fetch(form.action, {
-          method: 'POST',
-          body: fd,
-          headers: { [N8N_HEADER_NAME]: N8N_HEADER_VALUE }
-        });
-
-        if (resp.ok) {
-          form.style.display = 'none';
-          document.getElementById('confirmation').style.display = 'block';
-        } else {
-          const t = await resp.text().catch(()=> '');
-          errBox.textContent = "Erreur de soumission (serveur) : " + (t || resp.status);
-          errBox.style.display = 'block';
-        }
-      } catch (err) {
-        console.error(err);
-        errBox.textContent = "Erreur réseau / upload. Réessaie.";
-        errBox.style.display = 'block';
-      }
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'token': tokenValue
+      },
+      body: fd
     });
-  </script>
+
+    const text = await response.text();
+    document.getElementById('result').innerHTML = 
+      `<pre>${response.status} ${response.statusText}\n${text}</pre>`;
+  } catch (err) {
+    document.getElementById('result').textContent = "Erreur : " + err;
+  }
+});
+</script>
 </body>
 </html>
