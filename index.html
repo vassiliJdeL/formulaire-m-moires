@@ -4,6 +4,10 @@
   <meta charset="utf-8" />
   <title>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- NOTE: ce formulaire appelle l’URL PRODUCTION n8n :
+       https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire
+       (le workflow doit être ACTIVÉ). Pour tester en mode "Listen", remplacez
+       /webhook/ par /webhook-test/ puis cliquez sur "Listen for test event". -->
   <style>
     body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#f6f7fb;margin:0}
     .wrap{max-width:860px;margin:40px auto;padding:24px 28px;background:#fff;border-radius:14px;box-shadow:0 6px 30px rgba(0,0,0,.08)}
@@ -26,7 +30,7 @@
 
   <!-- Uploadcare widget v3 -->
   <script>
-    // Paramètres globaux optionnels (sinon utiliser uniquement data-*)
+    // Paramètres globaux optionnels (sinon utiliser seulement data-*)
     window.UPLOADCARE_LOCALE = 'fr';
     window.UPLOADCARE_TABS = 'file url';
     window.UPLOADCARE_CLEARABLE = true;
@@ -38,14 +42,14 @@
     <h1>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</h1>
     <p class="sub">Merci de compléter soigneusement tous les champs ci-dessous. / Please fill in all fields carefully.</p>
 
-    <form id="memoire-form" action="https://vassili-jdel.app.n8n.cloud/webhook-test/auto-eval-memoire" method="post" novalidate>
+    <form id="memoire-form" action="https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire" method="post" novalidate>
       <!-- Prénom / Nom -->
       <div>
         <label for="prenom">Prénom / Forename *</label>
         <input type="text" id="prenom" name="prenom" required>
       </div>
       <div>
-        <label for="nom">Nom / Name *</label>
+        <label for="nom">Nom / Surname *</label>
         <input type="text" id="nom" name="nom" required>
       </div>
 
@@ -101,17 +105,13 @@
           <span class="consent">
             <strong>FR :</strong> Les données collectées via ce formulaire sont utilisées pour l’évaluation du mémoire de fin d’études.
             Le fichier téléversé n’est pas stocké et est supprimé automatiquement à la fin de l’évaluation. Vous pouvez exercer vos droits
-            d’accès, de rectification, de suppression, en nous contactant à <em>vassili.joannides.de.lautour@gmail.com</em>.
-            Ce formulaire recueille votre consentement explicite via la case à cocher ci-contre.<br><br>
+            d’accès, de rectification, de suppression, en nous contactant à <em>vassili.joannides.de.lautour@gmail.com</em>.<br><br>
             <strong>EN (UK):</strong> The data collected through this form is used solely to assess your master’s thesis.
             The uploaded file is not stored and is automatically deleted after the assessment. You can exercise your rights of access,
-            rectification and erasure by contacting <em>vassili.joannides.de.lautour@gmail.com</em>. Explicit consent is collected via the checkbox.
+            rectification and erasure by contacting <em>vassili.joannides.de.lautour@gmail.com</em>.
           </span>
         </label>
       </div>
-
-      <!-- Jeton (provisoire) -->
-      <input type="hidden" name="token" value="2_TOUGH_eval_5_on" />
 
       <div class="full">
         <button type="submit">Soumettre / Submit</button>
@@ -125,7 +125,7 @@
   </div>
 
   <script>
-    // Par sécurité côté client, s'assurer que les images ne sont pas forcées
+    // Sécurité côté client : s’assurer que le widget accepte autre chose que des images
     try { uploadcare.settings.imagesOnly = false; } catch (e) {}
 
     const form   = document.getElementById('memoire-form');
