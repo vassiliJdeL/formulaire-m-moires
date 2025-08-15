@@ -3,125 +3,154 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Soumission du mémoire</title>
-  <meta name="description" content="Dépose ton mémoire (.docx) pour évaluation automatisée." />
+  <title>Soumission du mémoire / Thesis submission</title>
+  <meta name="description" content="Dépose ton mémoire (.docx) pour évaluation automatisée / Submit your thesis (.docx) for automated evaluation." />
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; }
+    :root { --w: 720px; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width: var(--w); margin: 40px auto; padding: 0 16px; }
     h1 { margin-bottom: 6px; }
     p.lead { opacity:.8; margin-top:0 }
     label { display:block; margin-top:12px; font-weight:600; }
     input, select { width:100%; padding:10px; margin-top:6px; box-sizing:border-box; }
     button { margin-top:20px; padding:12px 16px; border:0; cursor:pointer; border-radius:8px; }
-    .muted { font-size:14px; opacity:.7; }
+    .muted { font-size:14px; opacity:.75; }
     #confirmation { display:none; padding:16px; background:#f3f6ff; border-radius:8px; margin-top:24px; }
+    .row { display:grid; grid-template-columns: 1fr; gap:12px; }
+    @media (min-width: 640px) { .row-2 { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
 <body>
-  <h1>Soumission du mémoire</h1>
-  <p class="lead">Dépose ton fichier .docx. Tu recevras une confirmation si tout se passe bien.</p>
+  <h1>Soumission du mémoire / Thesis submission</h1>
+  <p class="lead">Dépose ton fichier .docx. Tu recevras une confirmation si tout se passe bien. / Upload your .docx file. You’ll receive a confirmation if everything goes well.</p>
 
   <form id="memoire-form"
         action="https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire"
         method="post" enctype="multipart/form-data">
-    <label>Prénom
-      <input name="prenom" required />
-    </label>
-    <label>Nom
-      <input name="nom" required />
-    </label>
+
+    <!-- 🔐 Jeton d'accès (doit correspondre à n8n: AUTOEVAL_TOKEN) -->
+    <input type="hidden" name="token" value="__SECRET_TOKEN__" />
+
+    <div class="row row-2">
+      <label>Prénom / Forename
+        <input name="prenom" required />
+      </label>
+
+      <label>Nom / Surname
+        <input name="nom" required />
+      </label>
+    </div>
+
     <label>Email
       <input type="email" name="email" required />
     </label>
-    <label>Titre du mémoire
+
+    <label>Titre du mémoire / Thesis title
       <input name="titre" required />
     </label>
-    <label>Langue
+
+    <label>Langue / Language
       <select name="langue" required>
-        <option value="fr">Français</option>
-        <option value="en">English</option>
+        <option value="fr">Français / French</option>
+        <option value="en">English / Anglais</option>
       </select>
     </label>
 
     <!-- Uploadcare widget -->
-    <label>Fichier (.docx)
+    <label>Document .docx — 10&nbsp;MB max
       <input
         type="hidden"
         role="uploadcare-uploader"
+        name="file"
         data-public-key="21d7228fa1f01ac80183"
         data-tabs="file url"
         data-clearable
+        data-multiple="false"
+        data-system-dialog="true"
         data-preferred-types=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        name="file"
+        data-file-max-size="10485760"  <!-- 10 MB -->
         required
       />
     </label>
 
-    <label class="muted" style="font-weight:400">
-      <input type="checkbox" name="rgpd" required />
-      J’accepte le traitement de mes données pour l’évaluation de mon mémoire.
-    </label>
+    <!-- RGPD: ajouté plus tard -->
 
-    <button type="submit">Soumettre</button>
+    <button type="submit">Soumettre / Submit</button>
   </form>
 
   <div id="confirmation">
-    <h2>Merci !</h2>
-    <p>Ton mémoire a bien été envoyé. Tu recevras un message de confirmation sous peu.</p>
+    <h2>Merci / Thank you!</h2>
+    <p>Ton mémoire a bien été envoyé. Tu recevras un message de confirmation sous peu. / Your thesis has been submitted. You will receive a confirmation shortly.</p>
   </div>
 
-  <noscript>Active JavaScript pour utiliser ce formulaire.</noscript>
+  <noscript>Active JavaScript pour utiliser ce formulaire / Enable JavaScript to use this form.</noscript>
 
   <!-- Uploadcare -->
   <script>
+    // Clé publique Uploadcare (déjà fournie)
     UPLOADCARE_PUBLIC_KEY = "21d7228fa1f01ac80183";
   </script>
   <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 
   <!-- Soumission vers n8n avec l’URL Uploadcare du fichier -->
   <script>
-    const form = document.querySelector('#memoire-form');
-    const widget = uploadcare.Widget('[role=uploadcare-uploader]');
+    (function () {
+      const form = document.querySelector('#memoire-form');
+      const widget = uploadcare.Widget('[role=uploadcare-uploader]');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      const fileValue = widget.value();
-      if (!fileValue) {
-        alert("Merci d’ajouter un fichier .docx avant d’envoyer.");
-        return;
-      }
-
-      try {
-        const fileInfo = await fileValue.promise(); // { uuid, name, cdnUrl, ... }
-        if (!fileInfo || !fileInfo.uuid) {
-          alert("Erreur Uploadcare : UUID du fichier introuvable.");
+        const fileValue = widget.value();
+        if (!fileValue) {
+          alert("Merci d’ajouter un fichier .docx avant d’envoyer. / Please add a .docx file before submitting.");
           return;
         }
 
-        const uuid = fileInfo.uuid;
-        const safeName = encodeURIComponent(fileInfo.name || 'memoire.docx');
-        const publicUrl = `https://ucarecdn.com/${uuid}/${safeName}`;
+        try {
+          const fileInfo = await fileValue.promise(); // { uuid, name, size, cdnUrl, ... }
 
-        const fd = new FormData(form);
-        fd.set('url', publicUrl);      // lu par n8n
-        fd.set('fileUrl', publicUrl);  // pour logs
-        fd.set('filename', fileInfo.name || 'memoire.docx');
-        fd.delete('file'); // on n’envoie pas le binaire
+          if (!fileInfo || !fileInfo.uuid) {
+            alert("Erreur Uploadcare : UUID introuvable. / Uploadcare error: missing UUID.");
+            return;
+          }
 
-        const resp = await fetch(form.action, { method: 'POST', body: fd });
+          // Vérif taille côté client (ceinture + bretelles)
+          const max = 10 * 1024 * 1024; // 10 MB
+          if (fileInfo.size && fileInfo.size > max) {
+            alert("Fichier trop volumineux (>10 MB). / File too large (>10 MB).");
+            return;
+          }
 
-        if (resp.ok) {
-          form.style.display = 'none';
-          document.getElementById('confirmation').style.display = 'block';
-        } else {
-          const t = await resp.text().catch(() => "");
-          alert("Erreur lors de la soumission. Détail: " + (t || resp.status));
+          const uuid = fileInfo.uuid;
+          const safeName = encodeURIComponent(fileInfo.name || 'memoire.docx');
+          const publicUrl = `https://ucarecdn.com/${uuid}/${safeName}`;
+
+          const fd = new FormData(form);
+          fd.set('url', publicUrl);      // lu par n8n
+          fd.set('fileUrl', publicUrl);  // pour logs
+          fd.set('filename', fileInfo.name || 'memoire.docx');
+          // Ne pas envoyer le binaire
+          fd.delete('file');
+
+          const resp = await fetch(form.action, {
+            method: 'POST',
+            body: fd,
+            headers: { 'Accept': 'application/json' }
+          });
+
+          if (resp.ok) {
+            form.style.display = 'none';
+            document.getElementById('confirmation').style.display = 'block';
+          } else {
+            const t = await resp.text().catch(() => "");
+            alert("Erreur lors de la soumission. / Submission error. Détail / Details: " + (t || resp.status));
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Erreur de connexion / upload. Réessaie. / Connection/upload error. Please try again.");
         }
-      } catch (err) {
-        console.error(err);
-        alert("Erreur de connexion / upload. Réessaie.");
-      }
-    });
+      });
+    })();
   </script>
 </body>
 </html>
