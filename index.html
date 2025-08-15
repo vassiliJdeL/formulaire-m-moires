@@ -88,14 +88,13 @@
   </div>
 
   <script>
-    // Empêche le mode images-only
     try { uploadcare.settings.imagesOnly = false; } catch (e) {}
 
     const form   = document.getElementById('memoire-form');
     const widget = uploadcare.Widget('#uc-file');
     const errBox = document.getElementById('upload-error');
 
-    // Identifiants BASIC à faire correspondre à n8n
+    // Identifiants BASIC Auth
     const USERNAME = 'formuser';
     const PASSWORD = '2_TOUGH_eval_5_on';
 
@@ -108,7 +107,7 @@
       if (!v) { errBox.textContent = "Merci d’ajouter un fichier .docx avant d’envoyer."; errBox.style.display='block'; return; }
 
       try {
-        const info = await v.promise(); // { cdnUrl, name, mimeType, size, ... }
+        const info = await v.promise();
 
         const isDocx = info.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                     || /\.docx$/i.test(info.name || '');
@@ -116,7 +115,7 @@
         if (info.size && info.size > 10 * 1024 * 1024) { errBox.textContent = "Fichier >10 MB (plan gratuit)."; errBox.style.display='block'; return; }
 
         const fd = new FormData(form);
-        fd.delete('file'); // ne pas envoyer la valeur brute du widget
+        fd.delete('file');
         fd.set('url', info.cdnUrl);
         fd.set('fileUrl', info.cdnUrl);
         fd.set('filename', info.name || 'memoire.docx');
