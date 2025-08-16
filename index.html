@@ -125,18 +125,27 @@
     // Sécurité Uploadcare : pas limité aux images
     try { uploadcare.settings.imagesOnly = false; } catch(e) {}
 
+    const PROD_WEBHOOK = 'https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire';
+
     const form   = document.getElementById('memoire-form');
     const widget = uploadcare.Widget('#uc-file');
     const errBox = document.getElementById('upload-error');
     const hintEl = document.getElementById('live-hint');
     const btn    = document.getElementById('submit-btn');
 
-    // === (Optionnel) Auth header si activé dans n8n ===
-    const USE_HEADER_AUTH = true;
+    // Auth désactivée à court terme
+    const USE_HEADER_AUTH = false;
     const HEADER_NAME  = 'WebhookSubmitToken';
     const HEADER_VALUE = '2_TOUGH_eval_5_on';
 
     function say(msg){ if(hintEl){ hintEl.textContent = msg; } }
+
+    // Forcer l'action sur l'URL de production & bloquer toute URL de test
+    form.setAttribute('action', PROD_WEBHOOK);
+    if (form.action.includes('/webhook-test/')) {
+      alert('Configuration invalide : URL de TEST détectée. Merci de corriger l’URL du webhook.');
+      throw new Error('Webhook test URL detected');
+    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -180,7 +189,6 @@
         fd.set('url', info.cdnUrl);           // alias utile côté n8n
         fd.set('filename', info.name || 'memoire.docx');
         fd.set('mime', info.mimeType || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        // (optionnel) taille
         if (info.size) fd.set('size', String(info.size));
 
         say('Envoi au serveur… / Submitting…');
@@ -202,13 +210,9 @@
           document.getElementById('confirmation').style.display = 'block';
         } else {
           const t = await resp.text().catch(()=> '');
-          if (resp.status === 401 || resp.status === 403) {
-            errBox.textContent =
-              "Erreur d’authentification (401/403). Vérifie dans n8n : Authentication=Header Auth, " +
-              "Name=WebhookSubmitToken, Value=2_TOUGH_eval_5_on, et que l’URL appelée est bien celle du nœud.";
-          } else {
-            errBox.textContent = "Erreur de soumission (serveur) : " + (t || resp.status);
-          }
+          errBox.textContent = (resp.status === 401 || resp.status === 403)
+            ? "Erreur d’authentification (401/403). Vérifie la configuration du webhook n8n."
+            : "Erreur de soumission (serveur) : " + (t || resp.status);
           errBox.style.display = 'block';
         }
       } catch (err) {
