@@ -29,7 +29,6 @@
 
   <!-- Uploadcare v3 (widget) -->
   <script>
-    // Config minimale : français, onglets Fichier + URL, effaçable
     window.UPLOADCARE_LOCALE = 'fr';
     window.UPLOADCARE_TABS = 'file url';
     window.UPLOADCARE_CLEARABLE = true;
@@ -42,7 +41,11 @@
     <p class="sub">Merci de compléter soigneusement tous les champs ci-dessous. / Please fill in all fields carefully.</p>
 
     <!-- IMPORTANT : URL = webhook PRODUCTION n8n -->
-    <form id="memoire-form" action="https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire" method="post" novalidate>
+    <form id="memoire-form"
+          action="https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire"
+          method="post"
+          enctype="multipart/form-data"
+          novalidate>
       <div>
         <label for="prenom">Prénom / Forename *</label>
         <input type="text" id="prenom" name="prenom" required>
@@ -119,33 +122,28 @@
   </div>
 
   <script>
-    // Sécurité Uploadcare : s'assurer que le widget n’est PAS limité aux images
-    try { uploadcare.settings.imagesOnly = false; } catch (e) {}
+    // Sécurité Uploadcare : pas limité aux images
+    try { uploadcare.settings.imagesOnly = false; } catch(e) {}
 
-    const form    = document.getElementById('memoire-form');
-    const widget  = uploadcare.Widget('#uc-file');
-    const errBox  = document.getElementById('upload-error');
-    const hintEl  = document.getElementById('live-hint');
-    const btn     = document.getElementById('submit-btn');
+    const form   = document.getElementById('memoire-form');
+    const widget = uploadcare.Widget('#uc-file');
+    const errBox = document.getElementById('upload-error');
+    const hintEl = document.getElementById('live-hint');
+    const btn    = document.getElementById('submit-btn');
 
-    // === AUTHENTIFICATION WEBHOOK (Header Auth) ===
-    // Doit correspondre EXACTEMENT à la config du nœud Webhook n8n :
-    // Security -> Authentication: Header Auth
-    // Header Name = WebhookSubmitToken
-    // Header Value = 2_TOUGH_eval_5_on
+    // === (Optionnel) Auth header si activé dans n8n ===
+    const USE_HEADER_AUTH = true;
     const HEADER_NAME  = 'WebhookSubmitToken';
     const HEADER_VALUE = '2_TOUGH_eval_5_on';
 
-    // Petit util pour afficher des messages discrets
     function say(msg){ if(hintEl){ hintEl.textContent = msg; } }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errBox.style.display = 'none';
-      errBox.textContent   = '';
+      errBox.textContent = '';
       say('');
 
-      // Vérif fichier
       const v = widget.value();
       if (!v) {
         errBox.textContent = "Merci d’ajouter un fichier .docx avant d’envoyer.";
@@ -163,45 +161,47 @@
         const isDocx = info.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                     || /\.docx$/i.test(info.name || '');
         if (!isDocx) {
-          btn.disabled = false;
-          say('');
+          btn.disabled = false; say('');
           errBox.textContent = "Seuls les fichiers .docx sont autorisés.";
           errBox.style.display='block';
           return;
         }
         if (info.size && info.size > 10 * 1024 * 1024) {
-          btn.disabled = false;
-          say('');
-          errBox.textContent = "Fichier trop volumineux (>10 MB sur le plan gratuit).";
+          btn.disabled = false; say('');
+          errBox.textContent = "Fichier trop volumineux (>10 MB).";
           errBox.style.display='block';
           return;
         }
 
-        // Construire le payload vers n8n (URL Uploadcare, pas le binaire)
+        // Payload : on envoie l'URL Uploadcare + métadonnées
         const fd = new FormData(form);
-        fd.delete('file');                // ne pas envoyer la valeur brute du widget
-        fd.set('url', info.cdnUrl);       // lu par n8n
-        fd.set('fileUrl', info.cdnUrl);   // utile pour logs
+        fd.delete('file'); // ne pas envoyer la valeur brute du widget
+        fd.set('fileUrl', info.cdnUrl);
+        fd.set('url', info.cdnUrl);           // alias utile côté n8n
         fd.set('filename', info.name || 'memoire.docx');
+        fd.set('mime', info.mimeType || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        // (optionnel) taille
+        if (info.size) fd.set('size', String(info.size));
 
         say('Envoi au serveur… / Submitting…');
 
-        // Soumission : Header Auth personnalisé
+        const headers = {};
+        if (USE_HEADER_AUTH) headers[HEADER_NAME] = HEADER_VALUE;
+
         const resp = await fetch(form.action, {
           method: 'POST',
+          mode: 'cors',
           body: fd,
-          headers: { [HEADER_NAME]: HEADER_VALUE }
+          headers
         });
 
-        btn.disabled = false;
-        say('');
+        btn.disabled = false; say('');
 
         if (resp.ok) {
           form.style.display = 'none';
           document.getElementById('confirmation').style.display = 'block';
         } else {
           const t = await resp.text().catch(()=> '');
-          // message utile si erreur d’authent (401/403) :
           if (resp.status === 401 || resp.status === 403) {
             errBox.textContent =
               "Erreur d’authentification (401/403). Vérifie dans n8n : Authentication=Header Auth, " +
@@ -213,8 +213,7 @@
         }
       } catch (err) {
         console.error(err);
-        btn.disabled = false;
-        say('');
+        btn.disabled = false; say('');
         errBox.textContent = "Erreur réseau / upload. Réessaie.";
         errBox.style.display = 'block';
       }
