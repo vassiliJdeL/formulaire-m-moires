@@ -1,44 +1,100 @@
-<!-- ... code d’en-tête inchangé ... -->
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#fff;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:#d1d5db;
+      --primary:#4338ca;
+      --radius:8px;
+      --shadow:0 4px 6px rgba(0,0,0,.1);
+    }
+    body {
+      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 2rem;
+    }
+    form, .confirm {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.5rem; }
+    label { display: block; margin-top: 1rem; }
+    input, select, textarea {
+      width: 100%;
+      padding: .5rem;
+      margin-top: .25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    button {
+      margin-top: 1.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+    .confirm { display: none; text-align: center; }
+    .hint { margin-top: .5rem; font-size: .875rem; color: var(--muted); }
+  </style>
+</head>
+<body>
 
 <form id="memoire-form"
-      action="https://vassili-jdel.app.n8n.cloud/webhook/auto-eval-memoire"
+      action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"
       method="post"
       enctype="multipart/form-data"
       novalidate>
-  <div>
-    <label for="prenom">Prénom / Forename *</label>
-    <input type="text" id="prenom" name="prenom" required>
-  </div>
-  <div>
-    <label for="nom">Nom / Surname *</label>
-    <input type="text" id="nom" name="nom" required>
-  </div>
 
-  <div class="full">
-    <label for="email">Email *</label>
-    <input type="email" id="email" name="email" required>
-  </div>
+  <h1>Soumission du mémoire / Thesis Submission</h1>
 
-  <div class="full">
-    <label for="titre">Titre du mémoire / Thesis title *</label>
-    <input type="text" id="titre" name="titre" required>
-  </div>
+  <label for="prenom">Prénom / Forename *</label>
+  <input type="text" id="prenom" name="prenom" required>
 
-  <div class="full row" style="align-items:center">
-    <label for="langue" style="min-width:180px">Langue / Language *</label>
-    <select id="langue" name="langue" required>
-      <option value="">—</option>
-      <option value="français">Français / French</option>
-      <option value="anglais">Anglais / English</option>
-    </select>
-  </div>
+  <label for="nom">Nom / Surname *</label>
+  <input type="text" id="nom" name="nom" required>
 
-  <!-- ... Uploadcare + RGPD inchangés ... -->
+  <label for="email">Email *</label>
+  <input type="email" id="email" name="email" required>
 
-  <div class="full">
-    <button type="submit" id="submit-btn">Soumettre / Submit</button>
-    <div class="hint" aria-live="polite" id="live-hint"></div>
-  </div>
+  <label for="titre">Titre du mémoire / Thesis title *</label>
+  <input type="text" id="titre" name="titre" required>
+
+  <label for="langue">Langue / Language *</label>
+  <select id="langue" name="langue" required>
+    <option value="">—</option>
+    <option value="français">Français / French</option>
+    <option value="anglais">Anglais / English</option>
+  </select>
+
+  <label for="file">Fichier du mémoire / Thesis File *</label>
+  <input type="hidden" role="uploadcare-uploader" name="file"
+         data-clearable
+         data-multiple="false"
+         data-locale="fr"
+         data-tabs="file url gdrive dropbox" />
+
+  <label for="rgpd">
+    <input type="checkbox" id="rgpd" name="rgpd" required>
+    J’accepte que mes données soient traitées dans le cadre de cette évaluation. / I consent to the processing of my data.
+  </label>
+
+  <button type="submit" id="submit-btn">Soumettre / Submit</button>
+  <div class="hint" aria-live="polite" id="live-hint"></div>
 </form>
 
 <div id="confirmation" class="confirm" role="status" aria-live="polite">
@@ -47,4 +103,32 @@
   Thank you very much for your submission. Your thesis is now being assessed. You shall receive the report in your mailbox within the next couple of minutes. Check your spambox. In the event you would not receive the report, this means there was an error while receiving your file. Do not hesitate to contact me: <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>
 </div>
 
-<!-- ... script JS inchangé ... -->
+<script>
+  UPLOADCARE_PUBLIC_KEY = '21d7228fa1f01ac80183';
+  UPLOADCARE_LOCALE_TRANSLATIONS = {
+    buttons: { choose: { files: { one: 'Choisir un fichier…' }}}
+  };
+
+  document.getElementById('memoire-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: formData
+    }).then(response => {
+      if (response.ok) {
+        form.style.display = 'none';
+        document.getElementById('confirmation').style.display = 'block';
+      } else {
+        document.getElementById('live-hint').textContent = "Une erreur est survenue lors de la soumission.";
+      }
+    }).catch(error => {
+      document.getElementById('live-hint').textContent = "Erreur réseau : " + error.message;
+    });
+  });
+</script>
+<script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+
+</body>
+</html>
