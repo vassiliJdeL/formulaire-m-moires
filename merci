@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Soumission reçue</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f6f7fb;
+      padding: 2rem;
+      text-align: center;
+    }
+    .box {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>✅ Soumission reçue</h1>
+    <p>Ton mémoire est en cours d'évaluation.</p>
+    <p>Un rapport te sera envoyé par email sous peu. Pense à vérifier ta boîte de courrier indésirable.</p>
+    <p><a href="/">Revenir à l'accueil</a></p>
+  </div>
+</body>
+</html>
