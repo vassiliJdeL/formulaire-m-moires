@@ -5,7 +5,7 @@
   <title>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root{
+    :root {
       --bg:#f6f7fb;
       --card:#fff;
       --text:#111827;
@@ -48,18 +48,20 @@
       border-radius: var(--radius);
       cursor: pointer;
     }
-    .confirm { display: none; text-align: center; }
-    .hint { margin-top: .5rem; font-size: .875rem; color: var(--muted); }
+    .confirm {
+      display: none;
+      text-align: center;
+    }
+    .hint {
+      margin-top: .5rem;
+      font-size: .875rem;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
 
-<form id="memoire-form"
-      action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"
-      method="post"
-      enctype="multipart/form-data"
-      novalidate>
-
+<form id="memoire-form" method="post" enctype="multipart/form-data" novalidate>
   <h1>Soumission du mémoire / Thesis Submission</h1>
 
   <label for="prenom">Prénom / Forename *</label>
@@ -93,6 +95,9 @@
     J’accepte que mes données soient traitées dans le cadre de cette évaluation. / I consent to the processing of my data.
   </label>
 
+  <!-- Champ token caché -->
+  <input type="hidden" id="token" name="token" value="2_TOUGH_eval_5_on" />
+
   <button type="submit" id="submit-btn">Soumettre / Submit</button>
   <div class="hint" aria-live="polite" id="live-hint"></div>
 </form>
@@ -108,12 +113,21 @@
   UPLOADCARE_LOCALE_TRANSLATIONS = {
     buttons: { choose: { files: { one: 'Choisir un fichier…' }}}
   };
+</script>
+<script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 
+<script>
   document.getElementById('memoire-form').addEventListener('submit', function (e) {
     e.preventDefault();
+
     const form = e.target;
     const formData = new FormData(form);
-    fetch(form.action, {
+    const fileInput = form.querySelector('input[role="uploadcare-uploader"]');
+
+    // Ajout dynamique du champ fichier
+    formData.set('file', fileInput.value);
+
+    fetch("https://hook.us1.make.com/2926117", {
       method: 'POST',
       body: formData
     }).then(response => {
@@ -128,7 +142,6 @@
     });
   });
 </script>
-<script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 
 </body>
 </html>
