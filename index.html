@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>Bienvenue dans l’espace évaluation du mémoire / Welcome to the thesis assessment area</title>
+  <title>Soumission du mémoire / Thesis Submission</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -16,13 +16,13 @@
       --shadow:0 4px 6px rgba(0,0,0,.1);
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
       background: var(--bg);
       color: var(--text);
       margin: 0;
       padding: 2rem;
     }
-    form, .confirm {
+    form {
       background: var(--card);
       padding: 2rem;
       border-radius: var(--radius);
@@ -32,7 +32,7 @@
     }
     h1 { font-size: 1.5rem; }
     label { display: block; margin-top: 1rem; }
-    input, select, textarea {
+    input, select {
       width: 100%;
       padding: .5rem;
       margin-top: .25rem;
@@ -48,10 +48,6 @@
       border-radius: var(--radius);
       cursor: pointer;
     }
-    .confirm {
-      display: none;
-      text-align: center;
-    }
     .hint {
       margin-top: .5rem;
       font-size: .875rem;
@@ -62,9 +58,11 @@
 <body>
 
 <form id="memoire-form"
-      action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"
-      method="post"
+      action="https://hook.us1.make.com/2926117"
+      method="POST"
       enctype="multipart/form-data"
+      target="dummyframe"
+      onsubmit="setTimeout(() => window.location.href = 'merci.html', 1000);"
       novalidate>
 
   <h1>Soumission du mémoire / Thesis Submission</h1>
@@ -89,34 +87,39 @@
   </select>
 
   <label for="file">Fichier du mémoire / Thesis File *</label>
-  <input type="hidden" role="uploadcare-uploader" name="file"
+  <input type="hidden"
+         role="uploadcare-uploader"
+         name="file"
          data-clearable
          data-multiple="false"
          data-locale="fr"
          data-tabs="file url gdrive dropbox" />
-
-  <!-- Champ token obligatoire pour le filtre -->
-  <input type="hidden" name="token" value="2_TOUGH_eval_5_on" />
 
   <label for="rgpd">
     <input type="checkbox" id="rgpd" name="rgpd" required>
     J’accepte que mes données soient traitées dans le cadre de cette évaluation. / I consent to the processing of my data.
   </label>
 
-  <button type="submit" id="submit-btn">Soumettre / Submit</button>
-  <div class="hint" aria-live="polite" id="live-hint"></div>
+  <!-- TOKEN pour le filtre dans Make -->
+  <input type="hidden" name="token" value="2_TOUGH_eval_5_on">
+
+  <button type="submit">Soumettre / Submit</button>
+  <div class="hint" aria-live="polite">Tous les champs sont obligatoires. / All fields are required.</div>
 </form>
 
-<div id="confirmation" class="confirm" role="status" aria-live="polite">
-  <strong>✅ Soumission reçue.</strong><br><br>
-  Merci pour ta soumission. Ton mémoire est en cours d'évaluation. Tu recevras le rapport par email dans les prochaines minutes. Pense à vérifier ta boîte de courrier indésirable. Si tu ne reçois pas le mail, ceci signifiera qu'il y a eu une erreur dans le processus de réception de ton fichier. N'hésite pas à me contacter : <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>.<br><br>
-  Thank you very much for your submission. Your thesis is now being assessed. You shall receive the report in your mailbox within the next couple of minutes. Check your spambox. In the event you would not receive the report, this means there was an error while receiving your file. Do not hesitate to contact me: <a href="mailto:vassili.joannides.de.lautour@gmail.com">vassili.joannides.de.lautour@gmail.com</a>
-</div>
+<!-- Pour éviter l’ouverture de l’URL Make brut -->
+<iframe name="dummyframe" style="display:none;"></iframe>
 
 <script>
   UPLOADCARE_PUBLIC_KEY = '21d7228fa1f01ac80183';
   UPLOADCARE_LOCALE_TRANSLATIONS = {
-    buttons: { choose: { files: { one: 'Choisir un fichier…' }}}
+    buttons: {
+      choose: {
+        files: {
+          one: 'Choisir un fichier…'
+        }
+      }
+    }
   };
 </script>
 <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
