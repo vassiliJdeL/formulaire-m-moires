@@ -16,7 +16,7 @@
       --shadow:0 4px 6px rgba(0,0,0,.1);
     }
     body {
-      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       margin: 0;
@@ -61,7 +61,12 @@
 </head>
 <body>
 
-<form id="memoire-form" method="post" enctype="multipart/form-data" novalidate>
+<form id="memoire-form"
+      action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"
+      method="post"
+      enctype="multipart/form-data"
+      novalidate>
+
   <h1>Soumission du mémoire / Thesis Submission</h1>
 
   <label for="prenom">Prénom / Forename *</label>
@@ -90,13 +95,13 @@
          data-locale="fr"
          data-tabs="file url gdrive dropbox" />
 
+  <!-- Champ token obligatoire pour le filtre -->
+  <input type="hidden" name="token" value="2_TOUGH_eval_5_on" />
+
   <label for="rgpd">
     <input type="checkbox" id="rgpd" name="rgpd" required>
     J’accepte que mes données soient traitées dans le cadre de cette évaluation. / I consent to the processing of my data.
   </label>
-
-  <!-- Champ token caché -->
-  <input type="hidden" id="token" name="token" value="2_TOUGH_eval_5_on" />
 
   <button type="submit" id="submit-btn">Soumettre / Submit</button>
   <div class="hint" aria-live="polite" id="live-hint"></div>
@@ -115,33 +120,6 @@
   };
 </script>
 <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
-
-<script>
-  document.getElementById('memoire-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const form = e.target;
-    const formData = new FormData(form);
-    const fileInput = form.querySelector('input[role="uploadcare-uploader"]');
-
-    // Ajout dynamique du champ fichier
-    formData.set('file', fileInput.value);
-
-    fetch("https://hook.us1.make.com/2926117", {
-      method: 'POST',
-      body: formData
-    }).then(response => {
-      if (response.ok) {
-        form.style.display = 'none';
-        document.getElementById('confirmation').style.display = 'block';
-      } else {
-        document.getElementById('live-hint').textContent = "Une erreur est survenue lors de la soumission.";
-      }
-    }).catch(error => {
-      document.getElementById('live-hint').textContent = "Erreur réseau : " + error.message;
-    });
-  });
-</script>
 
 </body>
 </html>
