@@ -2,30 +2,83 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Soumission reçue</title>
+  <title>Merci pour ta soumission / Thank you for your submission</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f6f7fb;
-      padding: 2rem;
-      text-align: center;
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --primary: #4338ca;
+      --radius: 8px;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    .box {
-      background: white;
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
       padding: 2rem;
-      border-radius: 8px;
-      max-width: 600px;
-      margin: auto;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>✅ Soumission reçue</h1>
-    <p>Ton mémoire est en cours d'évaluation.</p>
-    <p>Un rapport te sera envoyé par email sous peu. Pense à vérifier ta boîte de courrier indésirable.</p>
-    <p><a href="/">Revenir à l'accueil</a></p>
+
+<div class="grid">
+  <!-- Colonne française -->
+  <div class="card">
+    <h2>✅ Soumission reçue</h2>
+    <p>Merci pour ta soumission. Ton mémoire est en cours d'évaluation.</p>
+    <p>Tu recevras le rapport par email dans les prochaines minutes. Pense à vérifier ta boîte de courrier indésirable.</p>
+    <p>Si tu ne reçois pas de rapport d'évaluation de ton mémoire dans les prochaines minutes, ceci signifie qu'il y a eu une erreur dans la transmission du fichier au serveur. Dans ce cas, n'hésite pas à me contacter directement à l’adresse suivante : <a href="mailto:vassili.joannidesdelautour@unipr.it">vassili.joannidesdelautour@unipr.it</a>.</p>
   </div>
+
+  <!-- Colonne anglaise -->
+  <div class="card">
+    <h2>✅ Submission received</h2>
+    <p>Thank you for your submission. Your thesis is now being assessed.</p>
+    <p>You will receive the evaluation report by email within the next couple of minutes. Please check your spam folder just in case.</p>
+    <p>If you do not receive your thesis evaluation report within the next few minutes, it likely means there was an issue during the file transmission to the server. In that case, feel free to contact me directly: <a href="mailto:vassili.joannidesdelautour@unipr.it">vassili.joannidesdelautour@unipr.it</a>.</p>
+  </div>
+</div>
+
 </body>
 </html>
