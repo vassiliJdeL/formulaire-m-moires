@@ -5,54 +5,14 @@
   <title>Soumission du mémoire / Thesis Submission</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root {
-      --bg:#f6f7fb;
-      --card:#fff;
-      --text:#111827;
-      --muted:#6b7280;
-      --border:#d1d5db;
-      --primary:#4338ca;
-      --radius:8px;
-      --shadow:0 4px 6px rgba(0,0,0,.1);
-    }
-    body {
-      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 2rem;
-    }
-    form {
-      background: var(--card);
-      padding: 2rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    h1 { font-size: 1.5rem; }
-    label { display: block; margin-top: 1rem; }
-    input, select {
-      width: 100%;
-      padding: .5rem;
-      margin-top: .25rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-    button {
-      margin-top: 1.5rem;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: var(--radius);
-      cursor: pointer;
-    }
-    .hint {
-      margin-top: .5rem;
-      font-size: .875rem;
-      color: var(--muted);
-    }
+    :root{--bg:#f6f7fb;--card:#fff;--text:#111827;--muted:#6b7280;--border:#d1d5db;--primary:#4338ca;--radius:8px;--shadow:0 4px 6px rgba(0,0,0,.1)}
+    body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:2rem}
+    form{background:var(--card);padding:2rem;border-radius:var(--radius);box-shadow:var(--shadow);max-width:600px;margin:0 auto}
+    h1{font-size:1.5rem}
+    label{display:block;margin-top:1rem}
+    input,select{width:100%;padding:.5rem;margin-top:.25rem;border:1px solid var(--border);border-radius:var(--radius)}
+    button{margin-top:1.5rem;background:var(--primary);color:#fff;border:none;padding:.75rem 1.5rem;border-radius:var(--radius);cursor:pointer}
+    .hint{margin-top:.5rem;font-size:.875rem;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -61,9 +21,8 @@
       action="https://hook.eu2.make.com/404rtrr13j5vbygd0zi1ck9wkv4j0hlm"
       method="POST"
       enctype="multipart/form-data"
-      target="dummyframe"
-      onsubmit="setTimeout(() => window.location.href = 'merci.html', 1000);"
-      novalidate>
+      target="dummyframe">
+  <!-- retiré novalidate pour activer required -->
 
   <h1>Soumission du mémoire / Thesis Submission</h1>
 
@@ -88,12 +47,14 @@
 
   <label for="file">Fichier du mémoire / Thesis File *</label>
   <input type="hidden"
+         id="file"
          role="uploadcare-uploader"
          name="file"
-         data-clearable
+         data-clearable="true"
          data-multiple="false"
          data-locale="fr"
-         data-tabs="file url gdrive dropbox" />
+         data-tabs="file url gdrive dropbox"
+         required />
 
   <label for="rgpd">
     <input type="checkbox" id="rgpd" name="rgpd" required>
@@ -107,20 +68,21 @@
   <div class="hint" aria-live="polite">Tous les champs sont obligatoires. / All fields are required.</div>
 </form>
 
-<!-- Pour éviter l’ouverture de l’URL Make brut -->
+<!-- Évite l’ouverture de l’URL Make -->
 <iframe name="dummyframe" style="display:none;"></iframe>
 
 <script>
+  // Config Uploadcare AVANT le script
   UPLOADCARE_PUBLIC_KEY = '21d7228fa1f01ac80183';
   UPLOADCARE_LOCALE_TRANSLATIONS = {
-    buttons: {
-      choose: {
-        files: {
-          one: 'Choisir un fichier…'
-        }
-      }
-    }
+    buttons:{ choose:{ files:{ one:'Choisir un fichier…' } } }
   };
+
+  // Optionnel : redirection seulement si Make renvoie 200/2xx via l’iframe
+  // Ici, on conserve la redirection simple après 1,2 s.
+  document.getElementById('memoire-form').addEventListener('submit', function(){
+    setTimeout(() => { window.location.href = 'merci.html'; }, 1200);
+  });
 </script>
 <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 
