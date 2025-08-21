@@ -13,6 +13,7 @@
     input,select{width:100%;padding:.5rem;margin-top:.25rem;border:1px solid var(--border);border-radius:var(--radius)}
     button{margin-top:1.5rem;background:var(--primary);color:#fff;border:none;padding:.75rem 1.5rem;border-radius:var(--radius);cursor:pointer}
     .hint{margin-top:.5rem;font-size:.875rem;color:var(--muted)}
+    .docx-only{margin-left:.75rem;font-size:.875rem;color:var(--muted);font-weight:bold}
   </style>
 </head>
 <body>
@@ -22,7 +23,6 @@
       method="POST"
       enctype="multipart/form-data"
       target="dummyframe">
-  <!-- retiré novalidate pour activer required -->
 
   <h1>Soumission du mémoire / Thesis Submission</h1>
 
@@ -64,7 +64,11 @@
   <!-- TOKEN pour le filtre dans Make -->
   <input type="hidden" name="token" value="2_TOUGH_eval_5_on">
 
-  <button type="submit">Soumettre / Submit</button>
+  <div style="display:flex;align-items:center;gap:.5rem;">
+    <button type="submit">Soumettre / Submit</button>
+    <span class="docx-only">.docx only</span>
+  </div>
+
   <div class="hint" aria-live="polite">Tous les champs sont obligatoires. / All fields are required.</div>
 </form>
 
@@ -78,8 +82,7 @@
     buttons:{ choose:{ files:{ one:'Choisir un fichier…' } } }
   };
 
-  // Optionnel : redirection seulement si Make renvoie 200/2xx via l’iframe
-  // Ici, on conserve la redirection simple après 1,2 s.
+  // Redirection après soumission
   document.getElementById('memoire-form').addEventListener('submit', function(){
     setTimeout(() => { window.location.href = 'merci.html'; }, 1200);
   });
